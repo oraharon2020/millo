@@ -31,7 +31,7 @@ export default function KitchenStyles() {
   }, []);
 
   return (
-    <section className="container mx-auto px-6 lg:px-12 py-16 md:py-24">
+    <section className="container mx-auto px-6 lg:px-12 py-12 md:py-16">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-end">
         
         {styles.map((style, index) => (

@@ -37,7 +37,7 @@ export default function NiceToMillo() {
   const firstParagraph = settings.about_text?.split('\n')[0] || settings.about_text || ''
 
   return (
-    <section className="container mx-auto px-6 lg:px-12 py-16 md:py-24">
+    <section className="container mx-auto px-6 lg:px-12 py-12 md:py-16">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center" dir="ltr">
         
         {/* Text Content - Left Side */}

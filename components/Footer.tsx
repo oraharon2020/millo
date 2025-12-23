@@ -40,8 +40,8 @@ export default function Footer() {
   }, [])
 
   return (
-    <footer className="bg-white mt-12 md:mt-20 overflow-hidden max-w-[100vw]">
-      <div className="container mx-auto px-4 py-10 md:py-16" style={{ direction: 'ltr' }}>
+    <footer className="bg-white mt-8 md:mt-12 overflow-hidden max-w-[100vw]">
+      <div className="container mx-auto px-4 py-8 md:py-12" style={{ direction: 'ltr' }}>
         <div className="flex flex-col-reverse lg:flex-row justify-between gap-10 md:gap-12">
           
           {/* Left Side - Logo & Contact Info */}

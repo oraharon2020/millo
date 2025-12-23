@@ -99,8 +99,8 @@ export default function AccessibilityWidget() {
 
   return (
     <>
-      {/* Accessibility Panel */}[9999] transition-all duration-300 accessibility-widget-panel
-      <div className={`fixed left-6 bottom-24 z-50 transition-all duration-300 ${
+      {/* Accessibility Panel */}
+      <div className={`fixed left-6 bottom-24 z-[9999] transition-all duration-300 accessibility-widget-panel ${
         isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
       }`}>
         <div className="bg-white rounded-2xl shadow-2xl p-4 w-80 border border-gray-200">

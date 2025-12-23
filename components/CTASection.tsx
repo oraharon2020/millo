@@ -1,6 +1,6 @@
 export default function CTASection() {
   return (
-    <section className="container mx-auto px-6 lg:px-12">
+    <section className="container mx-auto px-6 lg:px-12 py-12 md:py-16">
       <div className="bg-black text-white py-8 md:py-10 px-6 md:px-12" style={{ borderRadius: '30px 30px 30px 30px' }}>
         <div className="max-w-4xl mx-auto">
           

@@ -18,7 +18,7 @@ const sizes = [
 
 export default function DesignedForYou() {
   return (
-    <section className="bg-gray-50 py-20 md:py-28">
+    <section className="bg-gray-50 py-12 md:py-16">
       <div className="container mx-auto px-6 lg:px-12">
         <div className="max-w-5xl mx-auto">
           {/* Title */}

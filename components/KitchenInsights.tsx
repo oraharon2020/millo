@@ -51,7 +51,7 @@ export default function KitchenInsights() {
 
   if (loading) {
     return (
-      <section className="py-12 md:py-20 overflow-hidden max-w-[100vw]">
+      <section className="py-12 md:py-16 overflow-hidden max-w-[100vw]">
         <div className="container mx-auto px-4 text-center">
           <div className="animate-pulse">
             <div className="h-12 bg-gray-200 rounded mb-4 mx-auto max-w-md"></div>
@@ -63,7 +63,7 @@ export default function KitchenInsights() {
   }
 
   return (
-    <section className="py-12 md:py-20 overflow-hidden max-w-[100vw]">
+    <section className="py-12 md:py-16 overflow-hidden max-w-[100vw]">
       {/* Header */}
       <div className="container mx-auto px-4 text-center mb-8 md:mb-12">
         <h2 className="elegant-title text-3xl md:text-5xl lg:text-6xl mb-3 md:mb-4">

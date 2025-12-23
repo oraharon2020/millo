@@ -19,7 +19,7 @@ const projects = [
 
 export default function NotOnlyKitchens() {
   return (
-    <section className="container mx-auto px-6 lg:px-12 py-16 md:py-24">
+    <section className="container mx-auto px-6 lg:px-12 py-12 md:py-16">
       {/* Header Row - Title Left (in LTR), Description Right */}
       <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-12 md:mb-16 gap-6" dir="ltr">
         {/* Title - Left side */}
