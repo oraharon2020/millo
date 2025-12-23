@@ -23,7 +23,7 @@ export default function NotOnlyKitchens() {
       {/* Header Row - Title Left (in LTR), Description Right */}
       <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-12 md:mb-16 gap-6" dir="ltr">
         {/* Title - Left side */}
-        <h2 className="font-english text-[2.5rem] md:text-[3.5rem] lg:text-[4rem] leading-[1.1] font-light tracking-wider text-left">
+        <h2 className="font-english text-[2.5rem] md:text-[3.5rem] lg:text-[4rem] leading-[1.1] font-light text-left">
           BUT NOT ONLY KITCHENS
         </h2>
         

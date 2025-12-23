@@ -70,10 +70,10 @@ export default function KitchenTypesPage() {
       </section>
 
       {/* Kitchen Types Grid Section */}
-      <section className="container mx-auto px-6 lg:px-12 py-16">
+      <section className="container mx-auto px-6 lg:px-12 py-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
-          <h2 className="font-english text-3xl md:text-4xl font-light tracking-wider">
+          <h2 className="font-english text-3xl md:text-4xl font-light">
             KITCHEN STYLES
           </h2>
         </div>
@@ -138,7 +138,7 @@ function KitchenTypeCard({ kitchenType }: { kitchenType: KitchenStyle }) {
             <h3 className="font-bold text-xl text-gray-900 mb-1 leading-tight font-hebrew">
               {kitchenType.name_he}
             </h3>
-            <p className="text-gray-500 text-sm font-english uppercase tracking-wider">
+            <p className="text-gray-500 text-sm font-english uppercase">
               {kitchenType.name_en}
             </p>
           </div>

@@ -118,7 +118,7 @@ export default function ContactPage() {
       </section>
 
       {/* Contact Section */}
-      <section className="container mx-auto px-6 lg:px-12 py-16">
+      <section className="container mx-auto px-6 lg:px-12 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           
           {/* Contact Form */}

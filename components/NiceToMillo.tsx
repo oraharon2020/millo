@@ -42,7 +42,7 @@ export default function NiceToMillo() {
         
         {/* Text Content - Left Side */}
         <div className="order-2 md:order-1 space-y-6">
-          <h2 className="font-english text-[2.5rem] md:text-[3.5rem] lg:text-[4rem] leading-[1.1] font-light tracking-wider text-left">
+          <h2 className="font-english text-[2.5rem] md:text-[3.5rem] lg:text-[4rem] leading-[1.1] font-light text-left">
             NICE TO<br />MILLO YOU!
           </h2>
           <div className="space-y-4 text-gray-600 leading-relaxed text-sm md:text-base text-right font-hebrew" dir="rtl">

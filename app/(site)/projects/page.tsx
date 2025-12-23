@@ -83,10 +83,10 @@ export default function ProjectsPage() {
   </div>
 </section>
       {/* Projects Grid Section */}
-      <section className="container mx-auto px-6 lg:px-12 py-16">
+      <section className="container mx-auto px-6 lg:px-12 py-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
-          <h2 className="font-english text-3xl md:text-4xl font-light tracking-wider">
+          <h2 className="font-english text-3xl md:text-4xl font-light">
             OUR PROJECTS
           </h2>
           

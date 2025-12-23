@@ -39,7 +39,7 @@ export default function KitchenShowcase() {
             {/* Text - Top (if text_position is top) */}
             {style.text_position === 'top' && (
               <div className="text-center order-2 md:order-1 md:mb-6">
-                <h3 className="font-english text-[2.5rem] md:text-[3rem] leading-[1.1] font-light tracking-wider">
+                <h3 className="font-english text-[2.5rem] md:text-[3rem] leading-[1.1] font-light">
                   {style.name_en}
                 </h3>
                 <p className="text-gray-600 text-sm mt-1 font-hebrew">{style.name_he}</p>
@@ -72,7 +72,7 @@ export default function KitchenShowcase() {
             {/* Text - Bottom (if text_position is bottom) */}
             {style.text_position === 'bottom' && (
               <div className="text-center">
-                <h3 className="font-english text-[2.5rem] md:text-[3rem] leading-[1.1] font-light tracking-wider">
+                <h3 className="font-english text-[2.5rem] md:text-[3rem] leading-[1.1] font-light">
                   {style.name_en}
                 </h3>
                 <p className="text-gray-600 text-sm mt-1 font-hebrew">{style.name_he}</p>

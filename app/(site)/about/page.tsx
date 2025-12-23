@@ -37,7 +37,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="relative bg-black text-white py-20">
+      <section className="relative bg-black text-white py-14">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl">
             <nav className="text-sm mb-6 opacity-70">
@@ -51,7 +51,7 @@ export default function AboutPage() {
       </section>
 
       {/* Content Section */}
-      <section className="py-20">
+      <section className="py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Text - Left Side */}
@@ -84,7 +84,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <div className="mb-16">
+      <div className="mb-10">
         <CTASection />
       </div>
       

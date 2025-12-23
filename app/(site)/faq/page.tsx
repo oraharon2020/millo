@@ -81,7 +81,7 @@ export default function FAQPage() {
       </section>
 
       {/* FAQs Section */}
-      <section className="container mx-auto px-6 lg:px-12 py-16">
+      <section className="container mx-auto px-6 lg:px-12 py-10">
         {/* Category Filter */}
         <div className="flex items-center justify-center gap-3 mb-12 flex-wrap">
           {categories.map((category) => (
@@ -154,7 +154,7 @@ export default function FAQPage() {
         )}
       </section>
 
-      <div className="mb-16">
+      <div className="mb-10">
         <CTASection />
       </div>
       
