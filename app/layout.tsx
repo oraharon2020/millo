@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "MILLO - מטבחים מעוצבים",
@@ -15,10 +13,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="he" dir="rtl">
-      <body>
-        <Header />
+      <body className="overflow-x-hidden">
         {children}
-        <Footer />
       </body>
     </html>
   );

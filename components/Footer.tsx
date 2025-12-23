@@ -1,82 +1,154 @@
+'use client'
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FaFacebook, FaInstagram, FaPhone, FaEnvelope } from "react-icons/fa";
+import Image from "next/image";
+import { FaFacebook, FaInstagram } from "react-icons/fa";
+import { FiPhone, FiMapPin, FiArrowDownLeft } from "react-icons/fi";
+import { supabase } from "@/lib/supabase";
 
 export default function Footer() {
+  const [settings, setSettings] = useState({
+    phone: "03-3732350",
+    address: "אברהם בומה שביט 1 ראשון לציון, מחסן F-101",
+    facebook: "",
+    instagram: ""
+  });
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const { data } = await supabase
+          .from('settings')
+          .select('phone, address, facebook, instagram')
+          .single()
+        
+        if (data) {
+          setSettings({
+            phone: data.phone || "03-3732350",
+            address: data.address || "אברהם בומה שביט 1 ראשון לציון, מחסן F-101",
+            facebook: data.facebook || "",
+            instagram: data.instagram || ""
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching settings:', error)
+      }
+    }
+
+    fetchSettings()
+  }, [])
+
   return (
-    <footer className="bg-white border-t border-gray-200 mt-20">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Logo & Description */}
-          <div className="col-span-1 md:col-span-2">
-            <h2 className="text-3xl font-serif font-light tracking-widest mb-4">MILLO</h2>
-            <p className="text-gray-600 leading-relaxed mb-4">
-              אנחנו מתמחים בעיצוב וייצור מטבחים מותאמים אישית שמשלבים פונקציונליות ואסתטיקה ברמה הגבוהה ביותר.
-            </p>
-            <div className="flex gap-4">
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <FaFacebook className="text-xl" />
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <FaInstagram className="text-xl" />
-              </a>
+    <footer className="bg-white mt-12 md:mt-20 overflow-hidden max-w-[100vw]">
+      <div className="container mx-auto px-4 py-10 md:py-16" style={{ direction: 'ltr' }}>
+        <div className="flex flex-col-reverse lg:flex-row justify-between gap-10 md:gap-12">
+          
+          {/* Left Side - Logo & Contact Info */}
+          <div className="flex flex-col items-center lg:items-start">
+            {/* Social Icons */}
+            <div className="flex gap-3 mb-6 md:mb-8">
+              {settings.facebook && (
+                <a
+                  href={settings.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 flex items-center justify-center hover:opacity-70 transition-opacity"
+                >
+                  <FaFacebook className="text-xl text-gray-800" />
+                </a>
+              )}
+              {settings.instagram && (
+                <a
+                  href={settings.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 flex items-center justify-center hover:opacity-70 transition-opacity"
+                >
+                  <FaInstagram className="text-xl text-gray-800" />
+                </a>
+              )}
+            </div>
+
+            {/* Logo */}
+            <div className="mb-8">
+              <Image 
+                src="/logo-millo.webp" 
+                alt="MILLO" 
+                width={180} 
+                height={60}
+                className="h-auto"
+              />
+            </div>
+
+            {/* Address */}
+            <div className="flex items-center gap-2 text-gray-600 mb-3 font-hebrew" style={{ direction: 'rtl' }}>
+              <FiMapPin className="text-lg flex-shrink-0" />
+              <span>{settings.address}</span>
+            </div>
+
+            {/* Phone */}
+            <div className="flex items-center gap-2 text-gray-600 font-hebrew" style={{ direction: 'rtl' }}>
+              <FiPhone className="text-lg flex-shrink-0" />
+              <span>{settings.phone}</span>
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">קישורים</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/" className="text-gray-600 hover:text-black transition-colors">
+          {/* Right Side - Navigation & CTA */}
+          <div className="flex flex-col items-center lg:items-start" style={{ direction: 'rtl' }}>
+            {/* CTA Button */}
+            <div className="mb-8 md:mb-12">
+              <button className="bg-gray-900 text-white px-6 md:px-8 py-3 md:py-4 rounded-full flex items-center gap-3 hover:bg-gray-800 transition-all font-hebrew text-sm md:text-base">
+                <span>לתאום פגישת ייעוץ ללא עלות</span>
+                <FiArrowDownLeft className="text-lg" />
+              </button>
+            </div>
+
+            {/* Navigation Links */}
+            <div className="flex gap-8 md:gap-16">
+              {/* Column 1 */}
+              <nav className="flex flex-col items-start gap-4 text-right">
+                <Link href="/" className="text-gray-600 hover:text-black transition-colors font-hebrew">
                   בית
                 </Link>
-              </li>
-              <li>
-                <Link href="/projects" className="text-gray-600 hover:text-black transition-colors">
+                <Link href="/projects" className="text-gray-600 hover:text-black transition-colors font-hebrew">
                   פרויקטים
                 </Link>
-              </li>
-              <li>
-                <Link href="/kitchen-types" className="text-gray-600 hover:text-black transition-colors">
-                  סוגי מטבחים
+                <Link href="/showroom" className="text-gray-600 hover:text-black transition-colors font-english tracking-wider">
+                  SHOWROOM
                 </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-gray-600 hover:text-black transition-colors">
+                <Link href="/blog" className="text-gray-600 hover:text-black transition-colors font-hebrew">
                   בלוג
                 </Link>
-              </li>
-            </ul>
-          </div>
+              </nav>
 
-          {/* Contact */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">צור קשר</h3>
-            <ul className="space-y-2">
-              <li className="flex items-center gap-2 text-gray-600">
-                <FaPhone className="text-sm" />
-                <span>050-123-4567</span>
-              </li>
-              <li className="flex items-center gap-2 text-gray-600">
-                <FaEnvelope className="text-sm" />
-                <span>info@millo.co.il</span>
-              </li>
-            </ul>
+              {/* Column 2 */}
+              <nav className="flex flex-col items-start gap-4 text-right">
+                <Link href="/about" className="text-gray-600 hover:text-black transition-colors font-hebrew">
+                  אודות
+                </Link>
+                <Link href="/contact" className="text-gray-600 hover:text-black transition-colors font-hebrew">
+                  יצירת קשר
+                </Link>
+                <Link href="/faq" className="text-gray-600 hover:text-black transition-colors font-hebrew">
+                  שאלות נפוצות
+                </Link>
+                <Link href="/accessibility" className="text-gray-600 hover:text-black transition-colors font-hebrew">
+                  הצהרת נגישות
+                </Link>
+                <Link href="/terms" className="text-gray-600 hover:text-black transition-colors font-hebrew">
+                  תנאי שימוש ותקנון האתר
+                </Link>
+              </nav>
+            </div>
           </div>
         </div>
+      </div>
 
-        <div className="border-t border-gray-200 mt-8 pt-8 text-center text-gray-500 text-sm">
-          <p>© 2025 MILLO. כל הזכויות שמורות.</p>
+      {/* Bottom Bar */}
+      <div className="bg-gray-900 py-4">
+        <div className="container mx-auto px-4 text-center text-gray-400 text-sm">
+          {/* Empty or can add copyright */}
         </div>
       </div>
     </footer>

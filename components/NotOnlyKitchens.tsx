@@ -40,12 +40,12 @@ export default function NotOnlyKitchens() {
         {projects.map((project, index) => (
           <div 
             key={index} 
-            className="group cursor-pointer bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+            className="group cursor-pointer bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow h-full flex flex-col"
             style={{ borderRadius: '30px 0 30px 30px' }}
           >
             {/* Image */}
             <div 
-              className={`relative w-full h-[180px] md:h-[220px] bg-gradient-to-br ${project.bgColor} overflow-hidden`}
+              className={`relative w-full h-[180px] md:h-[220px] bg-gradient-to-br ${project.bgColor} overflow-hidden flex-shrink-0`}
               style={{ borderRadius: '30px 0 0 0' }}
             >
               {/* Project image placeholder */}
@@ -55,14 +55,14 @@ export default function NotOnlyKitchens() {
             </div>
             
             {/* Content - Inside card */}
-            <div className="p-4 flex flex-col items-end">
+            <div className="p-4 flex flex-col items-end flex-1 justify-between">
               {/* Title - Right aligned */}
               <h3 className="font-hebrew text-right text-base md:text-lg font-medium mb-4 w-full">
                 {project.title}
               </h3>
               
               {/* Arrow Button - Right aligned, arrow pointing down-left */}
-              <button className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors">
+              <button className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors flex-shrink-0">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: 'rotate(135deg)' }}>
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>

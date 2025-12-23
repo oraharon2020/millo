@@ -5,7 +5,7 @@ export default function CTASection() {
         <div className="max-w-4xl mx-auto">
           
           {/* Title */}
-          <h2 className="font-hebrew text-lg md:text-xl lg:text-2xl text-center mb-6 md:mb-8 leading-relaxed whitespace-nowrap">
+          <h2 className="font-hebrew text-lg md:text-xl lg:text-2xl text-center mb-6 md:mb-8 leading-relaxed">
             אנחנו מזמינים אתכם <span className="font-bold">לפגישת ייעוץ חינם</span> השאירו פרטים
           </h2>
           

@@ -32,6 +32,11 @@
   box-sizing: border-box;
 }
 
+html {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 body {
   font-family: var(--font-hebrew);
   background: var(--background);
@@ -39,6 +44,9 @@ body {
   direction: rtl;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  max-width: 100vw;
+  position: relative;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -99,4 +107,56 @@ h1, h2, h3, h4, h5, h6 {
   background-color: #000;
   color: #fff;
   transform: translateY(-2px);
+}
+
+/* Accessibility Styles */
+html.high-contrast {
+  filter: contrast(1.5);
+}
+
+/* Ensure widgets are not affected by contrast filter */
+.contact-widget,
+.accessibility-widget-button,
+.accessibility-widget-panel {
+  filter: none !important;
+}
+
+html.high-contrast .contact-widget,
+html.high-contrast .accessibility-widget-button,
+html.high-contrast .accessibility-widget-panel {
+  filter: none !important;
+}
+
+.large-pointer,
+.large-pointer * {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="black" stroke="white" stroke-width="2" d="M6 2 L6 26 L12 20 L16 30 L20 28 L16 18 L24 18 Z"/></svg>') 0 0, auto !important;
+}
+
+.underline-links a {
+  text-decoration: underline !important;
+  text-decoration-thickness: 2px !important;
+  text-underline-offset: 3px !important;
+}
+
+/* Focus styles for keyboard navigation */
+*:focus-visible {
+  outline: 3px solid #3b82f6 !important;
+  outline-offset: 2px !important;
+}
+
+/* Skip to main content link */
+.skip-to-main {
+  position: absolute;
+  left: -9999px;
+  z-index: 999;
+  padding: 1em;
+  background-color: #000;
+  color: white;
+  text-decoration: none;
+}
+
+.skip-to-main:focus {
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
 }
