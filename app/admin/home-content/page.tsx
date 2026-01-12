@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Save, ChevronDown, ChevronUp, Image as ImageIcon, X } from "lucide-react";
+import { Save, ChevronDown, ChevronUp, Image as ImageIcon, X, Video, Play } from "lucide-react";
 import { supabase, HeroSection, TopBanner, SocialLink, ContactInfo } from "@/lib/supabase";
 import Image from "next/image";
 import ImagePicker from "@/components/admin/ImagePicker";
+import MediaPicker from "@/components/admin/MediaPicker";
 import ImagePositionPicker from "@/components/admin/ImagePositionPicker";
 
 // Default values
@@ -98,6 +99,7 @@ export default function HomeContentPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showImagePicker, setShowImagePicker] = useState(false);
+  const [showVideoPicker, setShowVideoPicker] = useState(false);
   const [imagePickerField, setImagePickerField] = useState<ImagePickerField>('main_image_url');
   
   const [hero, setHero] = useState<HeroSection>(defaultHero);
@@ -181,13 +183,51 @@ export default function HomeContentPage() {
       {/* Hero Video/Background */}
       <Section title="🎬 וידאו/רקע באנר ראשי" defaultOpen={true}>
         <div className="pt-3 space-y-3">
-          <Input 
-            label="קישור לוידאו" 
-            value={hero.video_url || ''} 
-            onChange={(v) => setHero({ ...hero, video_url: v })}
-            placeholder="/video.mp4"
-            dir="ltr"
-          />
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-gray-500">סרטון רקע</label>
+            {hero.video_url ? (
+              <div className="space-y-2">
+                <div className="relative h-40 rounded-lg overflow-hidden bg-gray-100">
+                  <video 
+                    src={hero.video_url} 
+                    className="w-full h-full object-cover"
+                    muted
+                    loop
+                    playsInline
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                    <Play className="text-white" size={32} fill="white" />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowVideoPicker(true)}
+                    className="flex-1 text-xs text-gray-600 hover:text-gray-900 py-2 border border-gray-200 rounded-lg hover:bg-gray-50"
+                  >
+                    החלף סרטון
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setHero({ ...hero, video_url: '' })}
+                    className="text-xs text-red-500 hover:text-red-700 py-2 px-3 border border-red-200 rounded-lg hover:bg-red-50"
+                  >
+                    הסר
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowVideoPicker(true)}
+                className="w-full h-32 border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center gap-2 hover:border-gray-400 hover:bg-gray-50 transition-colors"
+              >
+                <Video className="text-gray-400" size={24} />
+                <span className="text-sm text-gray-500">בחר סרטון רקע</span>
+                <span className="text-xs text-gray-400">MP4, WebM עד 50MB</span>
+              </button>
+            )}
+          </div>
           <p className="text-xs text-gray-400">השאר ריק להצגת תמונת רקע במקום וידאו</p>
         </div>
       </Section>
@@ -498,6 +538,15 @@ export default function HomeContentPage() {
         onClose={() => setShowImagePicker(false)}
         onSelect={handleImageSelect}
         title="בחר תמונה"
+      />
+
+      {/* Video Picker Modal */}
+      <MediaPicker
+        isOpen={showVideoPicker}
+        onClose={() => setShowVideoPicker(false)}
+        onSelect={(url) => setHero({ ...hero, video_url: url })}
+        title="בחר סרטון רקע"
+        mediaType="video"
       />
     </div>
   );
