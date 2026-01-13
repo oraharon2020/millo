@@ -13,7 +13,11 @@ import {
   Image,
   Users,
   Home,
-  ChefHat
+  ChefHat,
+  UserPlus,
+  FileText,
+  Boxes,
+  Info
 } from "lucide-react";
 
 interface SidebarProps {
@@ -28,14 +32,34 @@ const menuItems = [
     icon: LayoutDashboard 
   },
   { 
+    title: "לידים", 
+    href: "/admin/leads", 
+    icon: UserPlus 
+  },
+  { 
+    title: "הצעות מחיר", 
+    href: "/admin/quotes", 
+    icon: FileText 
+  },
+  { 
     title: "תוכן דף הבית", 
     href: "/admin/home-content", 
     icon: Home 
   },
   { 
+    title: "דף אודות", 
+    href: "/admin/about", 
+    icon: Info 
+  },
+  { 
     title: "סוגי מטבחים", 
     href: "/admin/kitchen-styles", 
     icon: ChefHat 
+  },
+  { 
+    title: "קטגוריות נגרות", 
+    href: "/admin/categories", 
+    icon: Boxes 
   },
   { 
     title: "פרויקטים", 
@@ -51,11 +75,6 @@ const menuItems = [
     title: "גלריה", 
     href: "/admin/gallery", 
     icon: Image 
-  },
-  { 
-    title: "פניות", 
-    href: "/admin/contacts", 
-    icon: MessageSquare 
   },
   { 
     title: "משתמשים", 

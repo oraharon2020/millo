@@ -145,17 +145,45 @@ export default function KitchenInsights() {
           </div>
         </div>
 
-        {/* Desktop Horizontal Scroll */}
-        <div 
-          ref={scrollContainerRef}
-          className="hidden md:flex gap-4 md:gap-6 overflow-x-auto pt-4 md:pt-8 pb-12 md:pb-16 px-4 md:px-12 lg:px-20 scrollbar-hide lg:justify-center w-full"
-          style={{ scrollSnapType: "x mandatory", direction: "ltr" }}
-        >
-          {insights.map((insight) => (
-            <div key={insight.id} style={{ scrollSnapAlign: "start" }}>
-              <InsightCard insight={insight} />
-            </div>
-          ))}
+        {/* Desktop Horizontal Scroll with Navigation */}
+        <div className="hidden md:block relative">
+          {/* Left Arrow */}
+          <button
+            onClick={() => {
+              if (scrollContainerRef.current) {
+                scrollContainerRef.current.scrollBy({ left: -320, behavior: 'smooth' });
+              }
+            }}
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-white hover:scale-110 transition-all border border-gray-200"
+          >
+            <ChevronLeft size={24} />
+          </button>
+
+          {/* Right Arrow */}
+          <button
+            onClick={() => {
+              if (scrollContainerRef.current) {
+                scrollContainerRef.current.scrollBy({ left: 320, behavior: 'smooth' });
+              }
+            }}
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-white hover:scale-110 transition-all border border-gray-200"
+          >
+            <ChevronRight size={24} />
+          </button>
+
+          {/* Scrollable Container */}
+          <div 
+            ref={scrollContainerRef}
+            dir="rtl"
+            className="flex flex-row-reverse gap-4 md:gap-6 overflow-x-auto pt-4 md:pt-8 pb-12 md:pb-16 px-16 scrollbar-hide w-full"
+            style={{ scrollSnapType: "x mandatory", scrollBehavior: "smooth" }}
+          >
+            {[...insights].reverse().map((insight) => (
+              <div key={insight.id} style={{ scrollSnapAlign: "start" }}>
+                <InsightCard insight={insight} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

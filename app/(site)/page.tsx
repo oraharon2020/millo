@@ -1,6 +1,6 @@
 import Hero from "@/components/Hero";
 import KitchenStyles from "@/components/KitchenStyles";
-import DesignedForYou from "@/components/DesignedForYou";
+// import DesignedForYou from "@/components/DesignedForYou"; // Hidden temporarily
 import KitchenShowcase from "@/components/KitchenShowcase";
 import NotOnlyKitchens from "@/components/NotOnlyKitchens";
 import NiceToMillo from "@/components/NiceToMillo";
@@ -12,9 +12,8 @@ export default function Home() {
     <main className="min-h-screen">
       <Hero />
       <KitchenStyles />
-      <DesignedForYou />
-      <KitchenShowcase />
       <NotOnlyKitchens />
+      <KitchenShowcase />
       <NiceToMillo />
       <CTASection />
       <KitchenInsights />

@@ -60,17 +60,35 @@ export default function ContactPage() {
 
     setLoading(true);
     try {
-      const { error } = await supabase
-        .from('contacts')
+      // Create a lead (primary CRM action)
+      const { error: leadError } = await supabase
+        .from('leads')
         .insert([{
-          name: formData.name,
+          full_name: formData.name,
           phone: formData.phone,
           email: formData.email || null,
-          message: formData.message || "פנייה מדף יצירת קשר",
+          notes: formData.message || "פנייה מדף יצירת קשר",
+          source: 'website',
+          source_details: 'טופס יצירת קשר',
+          project_type: 'kitchen',
           status: 'new'
         }]);
       
-      if (error) throw error;
+      if (leadError) {
+        console.error('Lead creation error:', leadError);
+        // Fallback: save to contacts if leads table doesn't exist
+        const { error: contactError } = await supabase
+          .from('contacts')
+          .insert([{
+            name: formData.name,
+            phone: formData.phone,
+            email: formData.email || null,
+            message: formData.message || "פנייה מדף יצירת קשר",
+            status: 'new'
+          }]);
+        
+        if (contactError) throw contactError;
+      }
       
       setSubmitted(true);
       setFormData({ name: "", phone: "", email: "", message: "" });

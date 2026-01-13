@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase, HeroSection } from "@/lib/supabase";
 import Image from "next/image";
 import Link from "next/link";
@@ -49,6 +49,7 @@ export default function Hero() {
       <div className="relative w-full h-[450px] md:h-[650px] lg:h-[850px] overflow-hidden" style={{ borderRadius: '0 30px 30px 30px' }}>
         {hero.video_url ? (
           <video 
+            key={hero.video_url}
             autoPlay 
             loop 
             muted 
@@ -56,9 +57,11 @@ export default function Hero() {
             className="absolute inset-0 w-full h-full object-cover"
           >
             <source src={hero.video_url} type="video/mp4" />
+            Your browser does not support the video tag.
           </video>
         ) : hero.image_url ? (
           <Image 
+            key={hero.image_url}
             src={hero.image_url} 
             alt="Hero" 
             fill 
@@ -140,6 +143,7 @@ export default function Hero() {
             <div className="relative h-[180px] md:h-[260px] rounded-[20px] md:rounded-[25px] overflow-hidden order-2">
               {hero.secondary_image_url ? (
                 <Image 
+                  key={hero.secondary_image_url}
                   src={hero.secondary_image_url} 
                   alt="Secondary" 
                   fill 
@@ -170,6 +174,7 @@ export default function Hero() {
           <div className="relative h-[280px] md:h-[450px] lg:h-[550px] overflow-hidden rounded-[20px] md:rounded-[30px] order-1 lg:order-2">
             {hero.main_image_url ? (
               <Image 
+                key={hero.main_image_url}
                 src={hero.main_image_url} 
                 alt="Kitchen" 
                 fill 

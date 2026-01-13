@@ -28,6 +28,8 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
   const [searchTerm, setSearchTerm] = useState("");
   const [urlInput, setUrlInput] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [hoveredImage, setHoveredImage] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -70,6 +72,14 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    await uploadFile(file);
+  };
+
+  const uploadFile = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      alert('ניתן להעלות רק קבצי תמונה');
+      return;
+    }
 
     setUploading(true);
     try {
@@ -89,7 +99,7 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
 
       // Add to gallery and select it
       setImages(prev => [{
-        name: fileName,
+        name: file.name, // Use original filename
         path: filePath,
         url: publicUrl
       }, ...prev]);
@@ -101,6 +111,30 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
       alert('שגיאה בהעלאת התמונה');
     } finally {
       setUploading(false);
+    }
+  };
+
+  // Drag and Drop handlers
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      await uploadFile(files[0]);
     }
   };
 
@@ -222,6 +256,8 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
                     <button
                       key={image.path}
                       onClick={() => setSelectedImage(image.url)}
+                      onMouseEnter={() => setHoveredImage(image.path)}
+                      onMouseLeave={() => setHoveredImage(null)}
                       className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
                         selectedImage === image.url
                           ? 'border-gray-900 ring-2 ring-gray-900 ring-offset-2'
@@ -241,6 +277,14 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
                           </div>
                         </div>
                       )}
+                      {/* Image name on hover */}
+                      {hoveredImage === image.path && selectedImage !== image.url && (
+                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                          <p className="text-white text-xs truncate" title={image.name}>
+                            {image.name}
+                          </p>
+                        </div>
+                      )}
                     </button>
                   ))}
                 </div>
@@ -251,17 +295,31 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
           {/* Upload Tab */}
           {activeTab === 'upload' && (
             <div className="space-y-4">
-              <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-gray-400 transition-colors bg-gray-50">
+              <label 
+                className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-xl cursor-pointer transition-colors bg-gray-50 ${
+                  isDragging 
+                    ? 'border-gray-900 bg-gray-100' 
+                    : 'border-gray-200 hover:border-gray-400'
+                }`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
                 {uploading ? (
                   <div className="flex flex-col items-center">
                     <Loader2 className="animate-spin text-gray-400 mb-2" size={32} />
                     <span className="text-gray-500">מעלה...</span>
                   </div>
+                ) : isDragging ? (
+                  <>
+                    <Upload className="text-gray-900 mb-2" size={40} />
+                    <span className="text-gray-900 font-medium">שחרר כאן להעלאה</span>
+                  </>
                 ) : (
                   <>
                     <Upload className="text-gray-400 mb-2" size={40} />
-                    <span className="text-gray-600 font-medium">לחץ לבחירת תמונה</span>
-                    <span className="text-gray-400 text-sm mt-1">או גרור לכאן</span>
+                    <span className="text-gray-600 font-medium">גרור תמונה לכאן</span>
+                    <span className="text-gray-400 text-sm mt-1">או לחץ לבחירה מהמחשב</span>
                     <span className="text-gray-400 text-xs mt-2">PNG, JPG, WEBP עד 10MB</span>
                   </>
                 )}
