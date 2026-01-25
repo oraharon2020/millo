@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getCategories } from "@/lib/data";
 
 interface Category {
   id: string;
@@ -21,8 +22,10 @@ interface NotOnlyKitchensProps {
   data?: Category[] | null;
 }
 
-export default function NotOnlyKitchens({ data }: NotOnlyKitchensProps) {
-  const categories = data && data.length > 0 ? data : defaultCategories;
+export default async function NotOnlyKitchens({ data }: NotOnlyKitchensProps) {
+  // Fetch data if not provided as props
+  const fetchedData = data ?? await getCategories();
+  const categories = fetchedData && fetchedData.length > 0 ? fetchedData : defaultCategories;
 
   return (
     <section className="container mx-auto px-6 lg:px-12 py-12 md:py-16">
