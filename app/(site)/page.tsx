@@ -19,8 +19,8 @@ export default async function Home() {
       <Hero data={hero} />
       <KitchenStyles data={kitchenStyles} />
       <TailoredDesign data={hero} />
-      <NotOnlyKitchens data={categories} />
       <KitchenShowcase data={kitchenStyles} />
+      <NotOnlyKitchens data={categories} />
       <NiceToMillo data={settings} />
       <CTASection />
       <KitchenInsights data={insights} />
