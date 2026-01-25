@@ -1,7 +1,4 @@
-"use client";
-
-import { useEffect, useState, useRef } from "react";
-import { supabase, HeroSection } from "@/lib/supabase";
+import { HeroSection } from "@/lib/supabase";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -20,25 +17,12 @@ const defaultHero: HeroSection = {
   updated_at: new Date().toISOString()
 };
 
-export default function Hero() {
-  const [hero, setHero] = useState<HeroSection>(defaultHero);
+interface HeroProps {
+  data?: HeroSection | null;
+}
 
-  useEffect(() => {
-    fetchHeroData();
-  }, []);
-
-  const fetchHeroData = async () => {
-    try {
-      const { data } = await supabase
-        .from('hero_section')
-        .select('*')
-        .single();
-      
-      if (data) setHero(data);
-    } catch (error) {
-      // Use default values
-    }
-  };
+export default function Hero({ data }: HeroProps) {
+  const hero = data || defaultHero;
 
   // Split title for display
   const titleParts = hero.title_en.split(',');

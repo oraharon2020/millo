@@ -1,45 +1,27 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { FiArrowDownLeft } from "react-icons/fi";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { supabase, KitchenInsight } from "../lib/supabase";
+import { KitchenInsight } from "../lib/supabase";
 
-export default function KitchenInsights() {
+interface KitchenInsightsProps {
+  data?: KitchenInsight[] | null;
+}
+
+export default function KitchenInsights({ data }: KitchenInsightsProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [insights, setInsights] = useState<KitchenInsight[]>([]);
-  const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  useEffect(() => {
-    fetchInsights();
-  }, []);
-
-  const fetchInsights = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('kitchen_insights')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      setInsights(data || []);
-    } catch (error) {
-      // DB not available yet - using fallback data
-      // Fallback to static data if DB fails
-      setInsights([
-        {
-          id: '1',
-          title: "לורם איפסום דולור סיט אמט אדפסינג אליט",
-          description: "לורם איפסום דולור סיט אמט, קונסקטורר אדיפיסינג אלית",
-          image_url: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&h=400&fit=crop",
-          created_at: new Date().toISOString()
-        }
-      ]);
-    } finally {
-      setLoading(false);
+  const insights = data && data.length > 0 ? data : [
+    {
+      id: '1',
+      title: "לורם איפסום דולור סיט אמט אדפסינג אליט",
+      description: "לורם איפסום דולור סיט אמט, קונסקטורר אדיפיסינג אלית",
+      image_url: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&h=400&fit=crop",
+      created_at: new Date().toISOString()
     }
-  };
+  ];
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % insights.length);
@@ -48,19 +30,6 @@ export default function KitchenInsights() {
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + insights.length) % insights.length);
   };
-
-  if (loading) {
-    return (
-      <section className="py-12 md:py-16 overflow-hidden max-w-[100vw]">
-        <div className="container mx-auto px-4 text-center">
-          <div className="animate-pulse">
-            <div className="h-12 bg-gray-200 rounded mb-4 mx-auto max-w-md"></div>
-            <div className="h-4 bg-gray-200 rounded mx-auto max-w-xl"></div>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section className="py-12 md:py-16 overflow-hidden max-w-[100vw]">

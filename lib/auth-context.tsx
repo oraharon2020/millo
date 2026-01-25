@@ -50,15 +50,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const initAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        // Add timeout for slow connections
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Auth timeout')), 2000)
+        );
+        
+        const sessionPromise = supabase.auth.getSession();
+        
+        const result = await Promise.race([sessionPromise, timeoutPromise]) as { data: { session: Session | null } };
         
         if (!mounted) return;
         
-        setSession(session);
+        const session = result?.data?.session;
+        setSession(session ?? null);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          await fetchProfile(session.user.id);
+          // Fetch profile in background, don't wait
+          fetchProfile(session.user.id);
+        }
+      } catch {
+        // Timeout or error - just continue without auth
+        if (mounted) {
+          setSession(null);
+          setUser(null);
         }
       } finally {
         if (mounted) setLoading(false);

@@ -1,37 +1,25 @@
-'use client'
-
-import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
 
-export default function NiceToMillo() {
-  const [settings, setSettings] = useState({
-    about_text: 'אנחנו MILLO - סטודיו לעיצוב מטבחים יוקרתיים המתמחה ביצירת חללי מטבח ייחודיים ומותאמים אישית. אנו משלבים עיצוב מודרני עם פונקציונליות מקסימלית.',
-    about_image: ''
-  })
+interface Settings {
+  about_text?: string;
+  about_image?: string;
+}
 
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const { data } = await supabase
-          .from('settings')
-          .select('about_text, about_image')
-          .single()
-        
-        if (data) {
-          setSettings({
-            about_text: data.about_text || 'אנחנו MILLO - סטודיו לעיצוב מטבחים יוקרתיים המתמחה ביצירת חללי מטבח ייחודיים ומותאמים אישית. אנו משלבים עיצוב מודרני עם פונקציונליות מקסימלית.',
-            about_image: data.about_image || ''
-          })
-        }
-      } catch (error) {
-        console.error('Error fetching settings:', error)
-      }
-    }
+interface NiceToMilloProps {
+  data?: Settings | null;
+}
 
-    fetchSettings()
-  }, [])
+const defaultSettings = {
+  about_text: 'אנחנו MILLO - סטודיו לעיצוב מטבחים יוקרתיים המתמחה ביצירת חללי מטבח ייחודיים ומותאמים אישית. אנו משלבים עיצוב מודרני עם פונקציונליות מקסימלית.',
+  about_image: ''
+};
+
+export default function NiceToMillo({ data }: NiceToMilloProps) {
+  const settings = {
+    about_text: data?.about_text || defaultSettings.about_text,
+    about_image: data?.about_image || defaultSettings.about_image
+  };
 
   // Get first paragraph from about text
   const firstParagraph = settings.about_text?.split('\n')[0] || settings.about_text || ''

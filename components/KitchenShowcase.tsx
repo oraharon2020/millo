@@ -1,8 +1,5 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Image from "next/image";
-import { supabase, KitchenStyle } from "@/lib/supabase";
+import { KitchenStyle } from "@/lib/supabase";
 
 // Default styles for fallback
 const defaultStyles: Partial<KitchenStyle>[] = [
@@ -11,24 +8,12 @@ const defaultStyles: Partial<KitchenStyle>[] = [
   { name_en: 'BOHO', name_he: 'מטבח בוהו', text_position: 'top', order_index: 2 },
 ];
 
-export default function KitchenShowcase() {
-  const [styles, setStyles] = useState<Partial<KitchenStyle>[]>(defaultStyles);
+interface KitchenShowcaseProps {
+  data?: KitchenStyle[] | null;
+}
 
-  useEffect(() => {
-    const fetchStyles = async () => {
-      const { data, error } = await supabase
-        .from('kitchen_styles')
-        .select('*')
-        .eq('row_group', 2)
-        .eq('is_active', true)
-        .order('order_index');
-      
-      if (data && data.length > 0) {
-        setStyles(data);
-      }
-    };
-    fetchStyles();
-  }, []);
+export default function KitchenShowcase({ data }: KitchenShowcaseProps) {
+  const styles = data && data.length > 0 ? data.filter(s => s.row_group === 2) : defaultStyles;
 
   return (
     <section className="container mx-auto px-6 lg:px-12 py-12 md:py-16">

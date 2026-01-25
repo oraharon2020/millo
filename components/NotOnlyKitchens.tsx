@@ -1,7 +1,3 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
 interface Category {
@@ -14,31 +10,19 @@ interface Category {
 }
 
 // Fallback data if database is empty
-const defaultCategories = [
+const defaultCategories: Category[] = [
   { id: '1', title: "נגרות מסדרון", bg_color: "from-amber-50 to-orange-50", image_url: null, description: null, link_url: null },
   { id: '2', title: "נגרות אמבטיה", bg_color: "from-gray-100 to-gray-200", image_url: null, description: null, link_url: null },
   { id: '3', title: "ארונות בהתאמה אישית", bg_color: "from-amber-100 to-amber-200", image_url: null, description: null, link_url: null },
   { id: '4', title: "חדרי שינה", bg_color: "from-rose-50 to-pink-50", image_url: null, description: null, link_url: null },
 ];
 
-export default function NotOnlyKitchens() {
-  const [categories, setCategories] = useState<Category[]>(defaultCategories);
+interface NotOnlyKitchensProps {
+  data?: Category[] | null;
+}
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('id, title, description, image_url, bg_color, link_url')
-        .eq('is_active', true)
-        .order('order_index');
-      
-      if (!error && data && data.length > 0) {
-        setCategories(data);
-      }
-    };
-
-    fetchCategories();
-  }, []);
+export default function NotOnlyKitchens({ data }: NotOnlyKitchensProps) {
+  const categories = data && data.length > 0 ? data : defaultCategories;
 
   return (
     <section className="container mx-auto px-6 lg:px-12 py-12 md:py-16">
