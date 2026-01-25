@@ -42,6 +42,8 @@ export default function KitchenShowcase({ data }: KitchenShowcaseProps) {
                   alt={style.name_en || ''}
                   fill
                   className="object-cover"
+                  loading="lazy"
+                  sizes="(max-width: 768px) 100vw, 33vw"
                   style={{ objectPosition: style.image_position || 'center center' }}
                 />
               ) : (

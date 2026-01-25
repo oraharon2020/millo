@@ -37,6 +37,7 @@ export default function Hero({ data }: HeroProps) {
             loop 
             muted 
             playsInline
+            preload="metadata"
             className="absolute inset-0 w-full h-full object-cover"
           >
             <source src={hero.video_url} type="video/mp4" />
@@ -57,6 +58,7 @@ export default function Hero({ data }: HeroProps) {
             loop 
             muted 
             playsInline
+            preload="metadata"
             className="absolute inset-0 w-full h-full object-cover"
           >
             <source src="/סרטון-לרוחב.mp4" type="video/mp4" />

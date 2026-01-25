@@ -58,6 +58,8 @@ export default async function NotOnlyKitchens({ data }: NotOnlyKitchensProps) {
                   <img 
                     src={category.image_url} 
                     alt={category.title}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 ) : (
