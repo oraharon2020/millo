@@ -55,7 +55,7 @@ export default function ProjectPage() {
 
   // Use thumbnail_url first, then image_url for backward compatibility
   const mainImage = project?.thumbnail_url || project?.image_url;
-  const allImages = project ? [mainImage, ...(project.images || [])].filter(Boolean) : [];
+  const allImages: string[] = project ? [mainImage, ...(project.images || [])].filter((img): img is string => Boolean(img)) : [];
 
   const openGallery = (index: number = 0) => {
     setCurrentImageIndex(index);
@@ -175,7 +175,7 @@ export default function ProjectPage() {
           <div className="mb-16">
             <h3 className="text-xl font-bold text-gray-900 mb-6 text-right font-hebrew">תמונות נוספות</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {allImages.slice(1, 9).map((img, idx) => (
+              {allImages.slice(1, 9).map((img, idx) => img && (
                 <button
                   key={idx}
                   onClick={() => openGallery(idx + 1)}
