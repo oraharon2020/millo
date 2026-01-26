@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import { getCategories } from "@/lib/data";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 
 interface Category {
   id: string;
@@ -22,10 +25,30 @@ interface NotOnlyKitchensProps {
   data?: Category[] | null;
 }
 
-export default async function NotOnlyKitchens({ data }: NotOnlyKitchensProps) {
-  // Fetch data if not provided as props
-  const fetchedData = data ?? await getCategories();
-  const categories = fetchedData && fetchedData.length > 0 ? fetchedData : defaultCategories;
+export default function NotOnlyKitchens({ data }: NotOnlyKitchensProps) {
+  const [categories, setCategories] = useState<Category[]>(data && data.length > 0 ? data : defaultCategories);
+
+  useEffect(() => {
+    // Only fetch if no data was provided as props
+    if (!data || data.length === 0) {
+      const fetchCategories = async () => {
+        try {
+          const { data: fetchedData } = await supabase
+            .from('categories')
+            .select('*')
+            .eq('is_active', true)
+            .order('order_index', { ascending: true });
+          
+          if (fetchedData && fetchedData.length > 0) {
+            setCategories(fetchedData);
+          }
+        } catch (error) {
+          // Use default categories on error
+        }
+      };
+      fetchCategories();
+    }
+  }, [data]);
 
   return (
     <section className="container mx-auto px-6 lg:px-12 py-12 md:py-16">

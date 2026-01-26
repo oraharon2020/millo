@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { FaFacebook, FaInstagram, FaWhatsapp, FaTiktok, FaYoutube, FaSearch, FaBars, FaTimes } from "react-icons/fa";
 import { supabase, TopBanner, SocialLink } from "@/lib/supabase";
+import { useAuth } from "@/lib/auth-context";
+import { usePathname } from "next/navigation";
 
 // Default values
 const defaultBanner: TopBanner = {
