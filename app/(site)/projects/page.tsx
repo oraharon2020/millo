@@ -3,41 +3,66 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { supabase, Project } from "@/lib/supabase";
+import { supabase, Project, ProjectCategory } from "@/lib/supabase";
 import { ChevronLeft, ChevronRight, ArrowDownLeft } from "lucide-react";
 import CTASection from "@/components/CTASection";
 import NotOnlyKitchens from "@/components/NotOnlyKitchens";
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [categories, setCategories] = useState<ProjectCategory[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const projectsPerPage = 8;
 
   useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset to first page when category changes
     fetchProjects();
-  }, [currentPage]);
+  }, [currentPage, selectedCategory]);
+
+  const fetchCategories = async () => {
+    const { data } = await supabase
+      .from('project_categories')
+      .select('*')
+      .eq('is_active', true)
+      .order('order_index');
+    setCategories(data || []);
+  };
 
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      // Get total count
-      const { count } = await supabase
+      // Build base query
+      let countQuery = supabase
         .from('projects')
         .select('*', { count: 'exact', head: true });
       
+      let dataQuery = supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      // Add category filter if selected
+      if (selectedCategory) {
+        countQuery = countQuery.eq('category_id', selectedCategory);
+        dataQuery = dataQuery.eq('category_id', selectedCategory);
+      }
+
+      // Get total count
+      const { count } = await countQuery;
       setTotalCount(count || 0);
 
       // Get paginated projects
       const from = (currentPage - 1) * projectsPerPage;
       const to = from + projectsPerPage - 1;
-
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .range(from, to);
+      
+      const { data, error } = await dataQuery.range(from, to);
 
       if (error) throw error;
       setProjects(data || []);
@@ -85,7 +110,7 @@ export default function ProjectsPage() {
       {/* Projects Grid Section */}
       <section className="container mx-auto px-6 lg:px-12 py-10">
         {/* Header */}
-        <div className="flex items-center justify-between mb-10">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
           <h2 className="font-english text-3xl md:text-4xl font-light">
             OUR PROJECTS
           </h2>
@@ -109,6 +134,33 @@ export default function ProjectsPage() {
               </button>
             </div>
           )}
+        </div>
+
+        {/* Category Filter */}
+        <div className="flex flex-wrap gap-2 mb-8" dir="rtl">
+          <button
+            onClick={() => setSelectedCategory("")}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              selectedCategory === "" 
+                ? "bg-black text-white" 
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            הכל
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                selectedCategory === cat.id 
+                  ? "bg-black text-white" 
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
         </div>
 
         {/* Loading State */}

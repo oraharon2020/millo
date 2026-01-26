@@ -14,9 +14,20 @@ export interface Project {
   thumbnail_url?: string
   images?: string[]
   category: string
+  category_id?: string
   location?: string
   is_featured?: boolean
   created_at: string
+}
+
+export interface ProjectCategory {
+  id: string
+  name: string
+  name_en?: string
+  slug: string
+  description?: string
+  order_index: number
+  is_active: boolean
 }
 
 export interface KitchenInsight {

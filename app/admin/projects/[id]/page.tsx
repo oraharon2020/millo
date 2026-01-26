@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowRight, X, Save, ImageIcon, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { supabase, ProjectCategory } from "@/lib/supabase";
 import Image from "next/image";
 import ImagePicker from "@/components/admin/ImagePicker";
 
@@ -15,21 +15,32 @@ export default function EditProjectPage() {
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [categories, setCategories] = useState<ProjectCategory[]>([]);
   const [showImagePicker, setShowImagePicker] = useState(false);
   const [imagePickerMode, setImagePickerMode] = useState<'thumbnail' | 'gallery'>('thumbnail');
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     location: "",
-    category: "",
+    category_id: "",
     image_url: "",
     images: [] as string[],
     is_featured: false
   });
 
   useEffect(() => {
+    fetchCategories();
     fetchProject();
   }, [id]);
+
+  const fetchCategories = async () => {
+    const { data } = await supabase
+      .from('project_categories')
+      .select('*')
+      .eq('is_active', true)
+      .order('order_index');
+    setCategories(data || []);
+  };
 
   const fetchProject = async () => {
     try {
@@ -46,8 +57,8 @@ export default function EditProjectPage() {
           title: data.title || "",
           description: data.description || "",
           location: data.location || "",
-          category: data.category || "",
-          image_url: data.image_url || "",
+          category_id: data.category_id || "",
+          image_url: data.image_url || data.thumbnail_url || "",
           images: data.images || [],
           is_featured: data.is_featured || false
         });
@@ -70,14 +81,19 @@ export default function EditProjectPage() {
 
     setSaving(true);
     try {
+      // Get category name for backward compatibility
+      const selectedCategory = categories.find(c => c.id === formData.category_id);
+      
       const { error } = await supabase
         .from('projects')
         .update({
           title: formData.title,
           description: formData.description,
           location: formData.location,
-          category: formData.category,
+          category: selectedCategory?.name || '',
+          category_id: formData.category_id || null,
           image_url: formData.image_url,
+          thumbnail_url: formData.image_url,
           images: formData.images,
           is_featured: formData.is_featured,
           updated_at: new Date().toISOString()
@@ -205,16 +221,14 @@ export default function EditProjectPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">קטגוריה</label>
               <select
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                value={formData.category_id}
+                onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 bg-white"
               >
                 <option value="">בחר קטגוריה</option>
-                <option value="מטבחים">מטבחים</option>
-                <option value="ארונות">ארונות</option>
-                <option value="חדרי רחצה">חדרי רחצה</option>
-                <option value="סלונים">סלונים</option>
-                <option value="משרדים">משרדים</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
               </select>
             </div>
           </div>

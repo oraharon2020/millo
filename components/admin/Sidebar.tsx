@@ -17,7 +17,8 @@ import {
   UserPlus,
   FileText,
   Boxes,
-  Info
+  Info,
+  Tags
 } from "lucide-react";
 
 interface SidebarProps {
@@ -65,6 +66,11 @@ const menuItems = [
     title: "פרויקטים", 
     href: "/admin/projects", 
     icon: FolderKanban 
+  },
+  { 
+    title: "קטגוריות פרויקטים", 
+    href: "/admin/project-categories", 
+    icon: Tags 
   },
   { 
     title: "Kitchen Insights", 
