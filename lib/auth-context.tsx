@@ -50,9 +50,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const initAuth = async () => {
       try {
-        // Add timeout for slow connections
+        // Add timeout for slow connections - 1.5 seconds max
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Auth timeout')), 2000)
+          setTimeout(() => reject(new Error('Auth timeout')), 1500)
         );
         
         const sessionPromise = supabase.auth.getSession();
