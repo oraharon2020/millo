@@ -29,26 +29,42 @@ export default function EditProjectPage() {
   });
 
   useEffect(() => {
-    fetchCategories();
-    fetchProject();
+    if (id) {
+      setLoading(true);
+      fetchCategories();
+      fetchProject();
+    }
   }, [id]);
 
   const fetchCategories = async () => {
-    const { data } = await supabase
-      .from('project_categories')
-      .select('*')
-      .eq('is_active', true)
-      .order('order_index');
-    setCategories(data || []);
+    try {
+      const { data, error } = await supabase
+        .from('project_categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('order_index');
+      
+      if (error) {
+        console.error('Error fetching categories:', error);
+      }
+      setCategories(data || []);
+    } catch (err) {
+      console.error('Categories fetch error:', err);
+    }
   };
 
   const fetchProject = async () => {
+    if (!id) return;
+    
     try {
+      console.log('Fetching project:', id);
       const { data, error } = await supabase
         .from('projects')
         .select('*')
         .eq('id', id)
         .single();
+      
+      console.log('Project data:', data, 'Error:', error);
       
       if (error) throw error;
       
