@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/auth-context";
+import { useRouter, useSearchParams } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import Image from "next/image";
+import { Suspense } from "react";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
-  const { signIn } = useAuth();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/admin';
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +23,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const { error } = await signIn(email, password);
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
       
       if (error) {
         if (error.message.includes('Invalid login credentials')) {
@@ -34,7 +35,7 @@ export default function LoginPage() {
       }
 
       // Redirect to admin dashboard
-      router.push('/admin');
+      router.push(redirectTo);
       router.refresh();
     } catch (err) {
       setError('שגיאה בהתחברות. נסה שוב.');
@@ -134,5 +135,17 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="animate-spin text-gray-400" size={40} />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }
