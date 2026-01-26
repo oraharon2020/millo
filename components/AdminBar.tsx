@@ -145,33 +145,33 @@ export default function AdminBar() {
 
         {/* Edit current page */}
         {editLink && (
-          <Link
+          <a
             href={editLink.href}
             className="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-gray-800 transition-colors"
           >
             <Edit size={14} />
             <span>{editLink.label}</span>
-          </Link>
+          </a>
         )}
 
         {/* Quick add buttons */}
         <div className="flex items-center gap-1">
-          <Link
+          <a
             href="/admin/projects/new"
             className="flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-800 transition-colors"
             title="הוסף פרויקט"
           >
             <Plus size={14} />
             <FolderKanban size={14} />
-          </Link>
-          <Link
+          </a>
+          <a
             href="/admin/insights/new"
             className="flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-800 transition-colors"
             title="הוסף מאמר"
           >
             <Plus size={14} />
             <Lightbulb size={14} />
-          </Link>
+          </a>
         </div>
       </div>
 
