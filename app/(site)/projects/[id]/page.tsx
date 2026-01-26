@@ -53,7 +53,9 @@ export default function ProjectPage() {
     }
   };
 
-  const allImages = project ? [project.image_url, ...(project.images || [])].filter(Boolean) : [];
+  // Use thumbnail_url first, then image_url for backward compatibility
+  const mainImage = project?.thumbnail_url || project?.image_url;
+  const allImages = project ? [mainImage, ...(project.images || [])].filter(Boolean) : [];
 
   const openGallery = (index: number = 0) => {
     setCurrentImageIndex(index);
@@ -130,9 +132,9 @@ export default function ProjectPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {/* Right - Main Image */}
           <div className="relative w-full aspect-[4/3] rounded-[30px] overflow-hidden bg-gray-100 order-2 md:order-1">
-            {project.image_url ? (
+            {mainImage ? (
               <Image
-                src={project.image_url}
+                src={mainImage}
                 alt={project.title}
                 fill
                 className="object-cover"
