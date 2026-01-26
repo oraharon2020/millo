@@ -4,7 +4,6 @@ import { useState } from "react";
 import AdminSidebar from "@/components/admin/Sidebar";
 import AdminTopBar from "@/components/admin/TopBar";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import { AuthProvider } from "@/lib/auth-context";
 
 export default function AdminLayout({
   children,
@@ -14,7 +13,6 @@ export default function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
-    <AuthProvider>
     <ProtectedRoute requiredRole="admin">
       <div className="min-h-screen bg-gray-50" dir="rtl">
         {/* Sidebar */}
@@ -29,6 +27,5 @@ export default function AdminLayout({
         </div>
       </div>
     </ProtectedRoute>
-    </AuthProvider>
   );
 }

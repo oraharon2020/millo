@@ -30,6 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
 
   const fetchProfile = useCallback(async (userId: string) => {
     try {
@@ -50,9 +51,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const initAuth = async () => {
       try {
-        // Add timeout for slow connections - 1.5 seconds max
+        // Quick check - max 1 second timeout
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Auth timeout')), 1500)
+          setTimeout(() => reject(new Error('Auth timeout')), 1000)
         );
         
         const sessionPromise = supabase.auth.getSession();
@@ -139,7 +140,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    // Return a default context for SSR/build time
+    return {
+      user: null,
+      profile: null,
+      session: null,
+      loading: true,
+      isAdmin: false,
+      signIn: async () => ({ error: new Error('Auth not initialized') }),
+      signOut: async () => {},
+    };
   }
   return context;
 }
