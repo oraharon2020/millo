@@ -131,7 +131,10 @@ export default function ProjectPage() {
         {/* Two Column Layout - Image Right, Content Left */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {/* Right - Main Image */}
-          <div className="relative w-full aspect-[4/3] rounded-[30px] overflow-hidden bg-gray-100 order-2 md:order-1">
+          <button 
+            onClick={() => openGallery(0)}
+            className="relative w-full aspect-[4/3] rounded-[30px] overflow-hidden bg-gray-100 order-2 md:order-1 cursor-pointer hover:opacity-90 transition-opacity"
+          >
             {mainImage ? (
               <Image
                 src={mainImage}
@@ -145,7 +148,7 @@ export default function ProjectPage() {
                 אין תמונה
               </div>
             )}
-          </div>
+          </button>
 
           {/* Left - Content */}
           <div className="flex flex-col justify-center text-right order-1 md:order-2">
@@ -156,17 +159,6 @@ export default function ProjectPage() {
             <p className="text-gray-700 text-base leading-relaxed mb-6 font-hebrew">
               {project.description}
             </p>
-
-            {/* View Gallery Button */}
-            {allImages.length > 1 && (
-              <button
-                onClick={() => openGallery(0)}
-                className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 transition-colors self-start"
-              >
-                <Images size={20} />
-                <span className="font-hebrew">צפה בגלריה ({allImages.length} תמונות)</span>
-              </button>
-            )}
           </div>
         </div>
 
@@ -174,7 +166,7 @@ export default function ProjectPage() {
         {allImages.length > 1 && (
           <div className="mb-16">
             <h3 className="text-xl font-bold text-gray-900 mb-6 text-right font-hebrew">תמונות נוספות</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               {allImages.slice(1, 9).map((img, idx) => img && (
                 <button
                   key={idx}
