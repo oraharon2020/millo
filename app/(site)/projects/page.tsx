@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { supabase, Project, ProjectCategory } from "@/lib/supabase";
@@ -9,6 +10,8 @@ import CTASection from "@/components/CTASection";
 import NotOnlyKitchens from "@/components/NotOnlyKitchens";
 
 export default function ProjectsPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
   const [categories, setCategories] = useState<ProjectCategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -17,9 +20,14 @@ export default function ProjectsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const projectsPerPage = 8;
 
+  // Read category from URL on initial load
   useEffect(() => {
+    const categoryFromUrl = searchParams.get('category');
+    if (categoryFromUrl) {
+      setSelectedCategory(categoryFromUrl);
+    }
     fetchCategories();
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     setCurrentPage(1); // Reset to first page when category changes
@@ -139,7 +147,10 @@ export default function ProjectsPage() {
         {/* Category Filter */}
         <div className="flex flex-wrap gap-2 mb-8" dir="rtl">
           <button
-            onClick={() => setSelectedCategory("")}
+            onClick={() => {
+              setSelectedCategory("");
+              router.push('/projects');
+            }}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
               selectedCategory === "" 
                 ? "bg-black text-white" 
@@ -151,7 +162,10 @@ export default function ProjectsPage() {
           {categories.map((cat) => (
             <button
               key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
+              onClick={() => {
+                setSelectedCategory(cat.id);
+                router.push(`/projects?category=${cat.id}`);
+              }}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 selectedCategory === cat.id 
                   ? "bg-black text-white" 

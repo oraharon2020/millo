@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase, KitchenStyle } from "@/lib/supabase";
+import { supabase, KitchenStyle, ProjectCategory } from "@/lib/supabase";
 import ImagePicker from "@/components/admin/ImagePicker";
 import ImagePositionPicker from "@/components/admin/ImagePositionPicker";
 import { Save, Plus, Trash2, GripVertical, ChevronUp, ChevronDown, Image as ImageIcon } from "lucide-react";
@@ -20,6 +20,7 @@ const defaultStyles: Partial<KitchenStyle>[] = [
 
 export default function KitchenStylesAdmin() {
   const [styles, setStyles] = useState<Partial<KitchenStyle>[]>(defaultStyles);
+  const [categories, setCategories] = useState<ProjectCategory[]>([]);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [expandedStyle, setExpandedStyle] = useState<number | null>(null);
@@ -27,7 +28,17 @@ export default function KitchenStylesAdmin() {
 
   useEffect(() => {
     fetchStyles();
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    const { data } = await supabase
+      .from('project_categories')
+      .select('*')
+      .eq('is_active', true)
+      .order('order_index');
+    setCategories(data || []);
+  };
 
   const fetchStyles = async () => {
     const { data, error } = await supabase
@@ -62,6 +73,7 @@ export default function KitchenStylesAdmin() {
               order_index: style.order_index,
               is_active: style.is_active,
               link_url: style.link_url,
+              project_category_id: style.project_category_id || null,
               updated_at: new Date().toISOString(),
             })
             .eq('id', style.id);
@@ -81,6 +93,7 @@ export default function KitchenStylesAdmin() {
               order_index: style.order_index,
               is_active: style.is_active ?? true,
               link_url: style.link_url,
+              project_category_id: style.project_category_id || null,
             });
           
           if (error) throw error;
@@ -282,6 +295,22 @@ export default function KitchenStylesAdmin() {
                 placeholder="/projects?style=modern"
                 dir="ltr"
               />
+            </div>
+
+            {/* Project Category */}
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">קטגוריית פרויקטים (לסינון)</label>
+              <select
+                value={style.project_category_id || ''}
+                onChange={(e) => updateStyle(globalIndex, 'project_category_id', e.target.value || null)}
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white"
+              >
+                <option value="">ללא קישור לקטגוריה</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-400 mt-1">בחר קטגוריה כדי שלחיצה על הסגנון תעביר לפרויקטים מסוננים</p>
             </div>
 
             {/* Delete button */}

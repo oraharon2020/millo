@@ -112,6 +112,7 @@ export interface KitchenStyle {
   order_index: number       // order within the row
   is_active: boolean
   link_url?: string         // optional link to projects filtered by style
+  project_category_id?: string  // link to project category for filtering
   created_at: string
   updated_at: string
 }
