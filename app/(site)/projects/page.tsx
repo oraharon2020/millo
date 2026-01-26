@@ -150,15 +150,66 @@ function ProjectsContent() {
 </section>
       {/* Projects Grid Section */}
       <section className="container mx-auto px-6 lg:px-12 py-10">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-          <h2 className="font-english text-3xl md:text-4xl font-light">
-            OUR PROJECTS
-          </h2>
+        {/* Header - Just pagination arrows */}
+        <div className="flex items-center justify-between mb-6">
+          {/* Category Filter - Desktop: buttons, Mobile: dropdown */}
+          <div className="flex-1">
+            {/* Mobile Dropdown */}
+            <div className="md:hidden relative" dir="rtl">
+              <select
+                value={selectedCategory}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSelectedCategory(value);
+                  router.push(value ? `/projects?category=${value}` : '/projects');
+                }}
+                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-right appearance-none font-hebrew focus:outline-none focus:ring-2 focus:ring-gray-200"
+              >
+                <option value="">כל הפרויקטים</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+              <ChevronLeft className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 rotate-[-90deg]" size={20} />
+            </div>
+            
+            {/* Desktop Buttons */}
+            <div className="hidden md:flex flex-wrap gap-2" dir="rtl">
+              <button
+                onClick={() => {
+                  setSelectedCategory("");
+                  router.push('/projects');
+                }}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  selectedCategory === "" 
+                    ? "bg-black text-white" 
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                הכל
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    setSelectedCategory(cat.id);
+                    router.push(`/projects?category=${cat.id}`);
+                  }}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    selectedCategory === cat.id 
+                      ? "bg-black text-white" 
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+          </div>
           
           {/* Pagination Arrows */}
           {totalPages > 1 && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mr-4">
               <button
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
@@ -175,39 +226,6 @@ function ProjectsContent() {
               </button>
             </div>
           )}
-        </div>
-
-        {/* Category Filter */}
-        <div className="flex flex-wrap gap-2 mb-8" dir="rtl">
-          <button
-            onClick={() => {
-              setSelectedCategory("");
-              router.push('/projects');
-            }}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              selectedCategory === "" 
-                ? "bg-black text-white" 
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            הכל
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => {
-                setSelectedCategory(cat.id);
-                router.push(`/projects?category=${cat.id}`);
-              }}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedCategory === cat.id 
-                  ? "bg-black text-white" 
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
         </div>
 
         {/* Loading State */}
