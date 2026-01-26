@@ -51,9 +51,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const initAuth = async () => {
       try {
-        // Quick check - max 1 second timeout
+        // Longer timeout for production - 5 seconds
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Auth timeout')), 1000)
+          setTimeout(() => reject(new Error('Auth timeout')), 5000)
         );
         
         const sessionPromise = supabase.auth.getSession();
@@ -72,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } catch {
         // Timeout or error - just continue without auth
+        console.log('Auth init timeout or error');
         if (mounted) {
           setSession(null);
           setUser(null);

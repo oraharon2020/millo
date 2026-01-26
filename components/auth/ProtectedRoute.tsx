@@ -16,13 +16,14 @@ export default function ProtectedRoute({ children, requiredRole = 'admin' }: Pro
   const pathname = usePathname();
   const [timedOut, setTimedOut] = useState(false);
 
-  // Safety timeout - if loading takes more than 3 seconds, redirect to login
+  // Safety timeout - if loading takes more than 8 seconds, redirect to login
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (loading) {
+        console.log('ProtectedRoute: Auth timeout, redirecting to login');
         setTimedOut(true);
       }
-    }, 3000);
+    }, 8000);
     
     return () => clearTimeout(timeout);
   }, [loading]);
