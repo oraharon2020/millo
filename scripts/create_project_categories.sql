@@ -34,3 +34,24 @@ INSERT INTO project_categories (name, name_en, slug, order_index) VALUES
   ('חדרי שינה', 'Bedrooms', 'bedrooms', 7),
   ('פרויקטים מסחריים', 'Commercial', 'commercial', 8)
 ON CONFLICT (slug) DO NOTHING;
+
+-- Add category_id column to projects table
+ALTER TABLE projects 
+ADD COLUMN IF NOT EXISTS category_id UUID REFERENCES project_categories(id);
+
+-- Add other potentially missing columns to projects
+ALTER TABLE projects 
+ADD COLUMN IF NOT EXISTS thumbnail_url TEXT;
+
+ALTER TABLE projects 
+ADD COLUMN IF NOT EXISTS images TEXT[];
+
+ALTER TABLE projects 
+ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT false;
+
+ALTER TABLE projects 
+ADD COLUMN IF NOT EXISTS location TEXT;
+
+-- Create index for faster lookups
+CREATE INDEX IF NOT EXISTS idx_projects_category 
+ON projects(category_id);

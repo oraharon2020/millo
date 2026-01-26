@@ -29,11 +29,6 @@ export default function ProjectsPage() {
     fetchCategories();
   }, [searchParams]);
 
-  useEffect(() => {
-    setCurrentPage(1); // Reset to first page when category changes
-    fetchProjects();
-  }, [currentPage, selectedCategory]);
-
   const fetchCategories = async () => {
     const { data } = await supabase
       .from('project_categories')
@@ -80,6 +75,12 @@ export default function ProjectsPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset to first page when category changes
+    fetchProjects();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, selectedCategory]);
 
   const totalPages = Math.ceil(totalCount / projectsPerPage);
 
@@ -228,14 +229,17 @@ export default function ProjectsPage() {
 }
 
 function ProjectCard({ project }: { project: Project }) {
+  // Use thumbnail_url, then first image from images array, then image_url as fallback
+  const imageUrl = project.thumbnail_url || (project.images && project.images[0]) || project.image_url;
+  
   return (
     <Link href={`/projects/${project.id}`} className="group block h-full">
       <div className="bg-white rounded-[30px] rounded-tr-none overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
         {/* Image */}
         <div className="relative aspect-[4/3] w-full bg-gray-100">
-          {project.image_url ? (
+          {imageUrl ? (
             <Image
-              src={project.image_url}
+              src={imageUrl}
               alt={project.title}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-500"
