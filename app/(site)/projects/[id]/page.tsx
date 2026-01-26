@@ -165,7 +165,6 @@ export default function ProjectPage() {
         {/* Gallery Grid Below */}
         {allImages.length > 1 && (
           <div className="mb-16">
-            <h3 className="text-xl font-bold text-gray-900 mb-6 text-right font-hebrew">תמונות נוספות</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               {allImages.slice(1, 9).map((img, idx) => img && (
                 <button
