@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +9,39 @@ import { ChevronLeft, ChevronRight, ArrowDownLeft } from "lucide-react";
 import CTASection from "@/components/CTASection";
 import NotOnlyKitchens from "@/components/NotOnlyKitchens";
 
+// Loading fallback for Suspense
+function ProjectsLoading() {
+  return (
+    <main className="min-h-screen bg-gray-50">
+      <section className="bg-gray-900 text-white py-16 md:py-24">
+        <div className="container mx-auto px-6 lg:px-12">
+          <h1 className="font-english text-5xl md:text-7xl font-light">פרויקטים</h1>
+        </div>
+      </section>
+      <section className="container mx-auto px-6 lg:px-12 py-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="bg-gray-200 rounded-[30px] aspect-square mb-4" />
+              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+              <div className="h-3 bg-gray-200 rounded w-1/2" />
+            </div>
+          ))}
+        </div>
+      </section>
+    </main>
+  );
+}
+
 export default function ProjectsPage() {
+  return (
+    <Suspense fallback={<ProjectsLoading />}>
+      <ProjectsContent />
+    </Suspense>
+  );
+}
+
+function ProjectsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
