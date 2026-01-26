@@ -227,6 +227,107 @@ export default function ProjectPage() {
             </button>
           </div>
         )}
+
+        {/* Technical Specifications */}
+        <div className="mb-16">
+          <div className="bg-gray-50 rounded-[30px] p-8 md:p-10">
+            <h3 className="text-2xl font-bold text-gray-900 mb-8 text-right font-hebrew">מפרט טכני</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" dir="rtl">
+              {/* Spec Item - Style */}
+              {project.category && (
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                      </svg>
+                    </div>
+                    <span className="text-sm text-gray-500 font-hebrew">סגנון</span>
+                  </div>
+                  <p className="text-lg font-medium text-gray-900 font-hebrew">{project.category}</p>
+                </div>
+              )}
+
+              {/* Spec Item - Location */}
+              {project.location && (
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                    <span className="text-sm text-gray-500 font-hebrew">מיקום</span>
+                  </div>
+                  <p className="text-lg font-medium text-gray-900 font-hebrew">{project.location}</p>
+                </div>
+              )}
+
+              {/* Spec Item - Materials */}
+              {project.materials && (
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                      </svg>
+                    </div>
+                    <span className="text-sm text-gray-500 font-hebrew">חומרים</span>
+                  </div>
+                  <p className="text-lg font-medium text-gray-900 font-hebrew">{project.materials}</p>
+                </div>
+              )}
+
+              {/* Spec Item - Countertop */}
+              {project.countertop && (
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z" />
+                      </svg>
+                    </div>
+                    <span className="text-sm text-gray-500 font-hebrew">משטח עבודה</span>
+                  </div>
+                  <p className="text-lg font-medium text-gray-900 font-hebrew">{project.countertop}</p>
+                </div>
+              )}
+
+              {/* Spec Item - Handles */}
+              {project.handles && (
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                      </svg>
+                    </div>
+                    <span className="text-sm text-gray-500 font-hebrew">ידיות</span>
+                  </div>
+                  <p className="text-lg font-medium text-gray-900 font-hebrew">{project.handles}</p>
+                </div>
+              )}
+
+              {/* Spec Item - Appliances */}
+              {project.appliances && (
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                    </div>
+                    <span className="text-sm text-gray-500 font-hebrew">מכשירי חשמל</span>
+                  </div>
+                  <p className="text-lg font-medium text-gray-900 font-hebrew">{project.appliances}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Related Projects */}
         {relatedProjects.length > 0 && (
           <div className="border-t border-gray-100 pt-12">

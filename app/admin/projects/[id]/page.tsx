@@ -25,7 +25,11 @@ export default function EditProjectPage() {
     category_id: "",
     image_url: "",
     images: [] as string[],
-    is_featured: false
+    is_featured: false,
+    materials: "",
+    countertop: "",
+    handles: "",
+    appliances: ""
   });
 
   useEffect(() => {
@@ -76,7 +80,11 @@ export default function EditProjectPage() {
           category_id: data.category_id || "",
           image_url: data.image_url || data.thumbnail_url || "",
           images: data.images || [],
-          is_featured: data.is_featured || false
+          is_featured: data.is_featured || false,
+          materials: data.materials || "",
+          countertop: data.countertop || "",
+          handles: data.handles || "",
+          appliances: data.appliances || ""
         });
       }
     } catch (error) {
@@ -112,6 +120,10 @@ export default function EditProjectPage() {
           thumbnail_url: formData.image_url,
           images: formData.images,
           is_featured: formData.is_featured,
+          materials: formData.materials || null,
+          countertop: formData.countertop || null,
+          handles: formData.handles || null,
+          appliances: formData.appliances || null,
           updated_at: new Date().toISOString()
         })
         .eq('id', id);
@@ -258,6 +270,57 @@ export default function EditProjectPage() {
               className="w-4 h-4 rounded border-gray-300"
             />
             <label htmlFor="featured" className="text-sm text-gray-700">הצג פרויקט זה בדף הבית</label>
+          </div>
+        </div>
+
+        {/* Technical Specifications */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">מפרט טכני</h2>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">חומרים</label>
+              <input
+                type="text"
+                value={formData.materials}
+                onChange={(e) => setFormData({ ...formData, materials: e.target.value })}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200"
+                placeholder="MDF צבוע, אלון טבעי"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">משטח עבודה</label>
+              <input
+                type="text"
+                value={formData.countertop}
+                onChange={(e) => setFormData({ ...formData, countertop: e.target.value })}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200"
+                placeholder="קוורץ לבן"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">ידיות</label>
+              <input
+                type="text"
+                value={formData.handles}
+                onChange={(e) => setFormData({ ...formData, handles: e.target.value })}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200"
+                placeholder="ידיות אינטגרליות"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">מכשירי חשמל</label>
+              <input
+                type="text"
+                value={formData.appliances}
+                onChange={(e) => setFormData({ ...formData, appliances: e.target.value })}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200"
+                placeholder="Miele, Siemens"
+              />
+            </div>
           </div>
         </div>
 
