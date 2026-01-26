@@ -16,7 +16,7 @@ export default function KitchenStyles({ data }: KitchenStylesProps) {
   const styles = data && data.length > 0 ? data.filter(s => s.row_group === 1) : defaultStyles;
 
   return (
-    <section className="container mx-auto px-6 lg:px-12 py-12 md:py-16">
+    <section className="container mx-auto px-6 lg:px-12 pt-6 pb-12 md:pt-8 md:pb-16">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-end">
         
         {styles.map((style, index) => (

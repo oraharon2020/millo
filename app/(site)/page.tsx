@@ -1,4 +1,5 @@
 import Hero from "@/components/Hero";
+import ChooseYourDesign from "@/components/ChooseYourDesign";
 import KitchenStyles from "@/components/KitchenStyles";
 import TailoredDesign from "@/components/TailoredDesign";
 // import DesignedForYou from "@/components/DesignedForYou"; // Hidden temporarily
@@ -17,6 +18,7 @@ export default async function Home() {
   return (
     <main className="min-h-screen">
       <Hero data={hero} />
+      <ChooseYourDesign />
       <KitchenStyles data={kitchenStyles} />
       <TailoredDesign data={hero} />
       <KitchenShowcase data={kitchenStyles} />
