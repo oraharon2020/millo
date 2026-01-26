@@ -34,15 +34,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchProfile = useCallback(async (userId: string) => {
     try {
-      const { data } = await supabase
+      console.log('Fetching profile for user:', userId);
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .maybeSingle();
       
+      console.log('Profile fetched:', data, 'Error:', error);
       setProfile(data || null);
-    } catch {
+      return data;
+    } catch (err) {
+      console.log('Profile fetch error:', err);
       setProfile(null);
+      return null;
     }
   }, []);
 
@@ -51,34 +56,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const initAuth = async () => {
       try {
-        // Longer timeout for production - 5 seconds
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Auth timeout')), 5000)
-        );
-        
-        const sessionPromise = supabase.auth.getSession();
-        
-        const result = await Promise.race([sessionPromise, timeoutPromise]) as { data: { session: Session | null } };
+        // Get session - don't use timeout, let it complete
+        const { data: { session } } = await supabase.auth.getSession();
         
         if (!mounted) return;
         
-        const session = result?.data?.session;
+        console.log('Auth init complete, session:', session ? 'exists' : 'null');
+        
         setSession(session ?? null);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Fetch profile in background, don't wait
-          fetchProfile(session.user.id);
+          // Fetch profile and WAIT for it before setting loading to false
+          await fetchProfile(session.user.id);
         }
-      } catch {
-        // Timeout or error - just continue without auth
-        console.log('Auth init timeout or error');
+      } catch (error) {
+        console.log('Auth init error:', error);
         if (mounted) {
           setSession(null);
           setUser(null);
         }
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) {
+          console.log('Auth init finished, setting loading to false');
+          setLoading(false);
+        }
       }
     };
 

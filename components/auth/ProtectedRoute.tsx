@@ -14,31 +14,37 @@ export default function ProtectedRoute({ children, requiredRole = 'admin' }: Pro
   const { user, loading, isAdmin } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const [timedOut, setTimedOut] = useState(false);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
 
-  // Safety timeout - if loading takes more than 8 seconds, redirect to login
+  // Only check auth after loading completes
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (loading) {
-        console.log('ProtectedRoute: Auth timeout, redirecting to login');
-        setTimedOut(true);
-      }
-    }, 8000);
-    
-    return () => clearTimeout(timeout);
-  }, [loading]);
+    // Wait for auth to finish loading
+    if (loading) {
+      console.log('ProtectedRoute: Still loading auth...');
+      return;
+    }
 
-  useEffect(() => {
-    if (loading && !timedOut) return;
+    console.log('ProtectedRoute: Auth loaded, user:', user?.email || 'none', 'isAdmin:', isAdmin);
 
-    if (!user || timedOut) {
-      router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
+    // Auth finished loading, now check
+    if (!user) {
+      console.log('ProtectedRoute: No user, will redirect to login');
+      setShouldRedirect(true);
     } else if (requiredRole === 'admin' && !isAdmin) {
+      console.log('ProtectedRoute: User is not admin, will redirect to unauthorized');
       router.replace('/unauthorized');
     }
-  }, [user, loading, isAdmin, router, pathname, requiredRole, timedOut]);
+  }, [user, loading, isAdmin, router, pathname, requiredRole]);
 
-  if (loading && !timedOut) {
+  // Redirect effect (separate to avoid race conditions)
+  useEffect(() => {
+    if (shouldRedirect) {
+      router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
+    }
+  }, [shouldRedirect, router, pathname]);
+
+  // Show loader while auth is loading
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Loader2 className="animate-spin text-gray-400" size={40} />
@@ -46,8 +52,13 @@ export default function ProtectedRoute({ children, requiredRole = 'admin' }: Pro
     );
   }
 
+  // Don't render anything if not authenticated
   if (!user || (requiredRole === 'admin' && !isAdmin)) {
-    return null;
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="animate-spin text-gray-400" size={40} />
+      </div>
+    );
   }
 
   return <>{children}</>;

@@ -26,12 +26,24 @@ export default function ProjectPage() {
   const fetchProject = async (id: string) => {
     setLoading(true);
     try {
+      console.log('Fetching project:', id);
+      console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+      
+      // Add timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
       const { data, error } = await supabase
         .from('projects')
         .select('*')
         .eq('id', id)
-        .single();
+        .single()
+        .abortSignal(controller.signal);
 
+      clearTimeout(timeoutId);
+      
+      console.log('Project fetched:', data, 'Error:', error);
+      
       if (error) throw error;
       setProject(data);
 

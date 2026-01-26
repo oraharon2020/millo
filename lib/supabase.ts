@@ -18,6 +18,10 @@ export interface Project {
   location?: string
   is_featured?: boolean
   created_at: string
+  materials?: string
+  countertop?: string
+  handles?: string
+  appliances?: string
 }
 
 export interface ProjectCategory {
