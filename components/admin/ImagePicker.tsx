@@ -9,6 +9,8 @@ interface ImagePickerProps {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (url: string) => void;
+  onMultiSelect?: (urls: string[]) => void;
+  multiSelect?: boolean;
   title?: string;
 }
 
@@ -20,16 +22,26 @@ interface GalleryImage {
 
 type TabType = 'gallery' | 'upload' | 'url';
 
-export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר תמונה" }: ImagePickerProps) {
+export default function ImagePicker({ 
+  isOpen, 
+  onClose, 
+  onSelect, 
+  onMultiSelect,
+  multiSelect = false,
+  title = "בחר תמונה" 
+}: ImagePickerProps) {
   const [activeTab, setActiveTab] = useState<TabType>('gallery');
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [urlInput, setUrlInput] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [hoveredImage, setHoveredImage] = useState<string | null>(null);
+  const [seoFileName, setSeoFileName] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -70,9 +82,78 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
   };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    await uploadFile(file);
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    
+    if (files.length > 1 || multiSelect) {
+      await uploadMultipleFiles(Array.from(files));
+    } else {
+      await uploadFile(files[0]);
+    }
+  };
+
+  const uploadMultipleFiles = async (files: File[]) => {
+    setUploading(true);
+    setUploadProgress(0);
+    const uploadedUrls: string[] = [];
+    
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (!file.type.startsWith('image/')) continue;
+      
+      try {
+        const fileExt = file.name.split('.').pop();
+        let baseName: string;
+        
+        // Use SEO name if provided, otherwise clean the original name
+        if (seoFileName.trim()) {
+          baseName = seoFileName.trim().replace(/^-+|-+$/g, '');
+        } else {
+          const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+          const cleanName = nameWithoutExt.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_');
+          baseName = cleanName.replace(/^_+|_+$/g, '') || 'img';
+        }
+        
+        // Add index and timestamp for multiple files
+        const fileName = files.length > 1 
+          ? `${baseName}-${i + 1}-${Date.now()}.${fileExt}`
+          : `${baseName}-${Date.now()}.${fileExt}`;
+        const filePath = `gallery/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('images')
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('images')
+          .getPublicUrl(filePath);
+
+        uploadedUrls.push(publicUrl);
+        
+        setImages(prev => [{
+          name: baseName + (files.length > 1 ? `-${i + 1}` : ''),
+          path: filePath,
+          url: publicUrl
+        }, ...prev]);
+        
+        setUploadProgress(Math.round(((i + 1) / files.length) * 100));
+      } catch (error) {
+        console.error('Error uploading:', file.name, error);
+      }
+    }
+    
+    setUploading(false);
+    setUploadProgress(0);
+    setSeoFileName(""); // Reset SEO name field
+    
+    if (multiSelect && uploadedUrls.length > 0) {
+      setSelectedImages(prev => [...prev, ...uploadedUrls]);
+    } else if (uploadedUrls.length > 0) {
+      setSelectedImage(uploadedUrls[0]);
+    }
+    setActiveTab('gallery');
   };
 
   const uploadFile = async (file: File) => {
@@ -84,7 +165,19 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
     setUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      let finalName: string;
+      
+      // Use SEO name if provided, otherwise clean the original name
+      if (seoFileName.trim()) {
+        finalName = seoFileName.trim().replace(/^-+|-+$/g, '');
+      } else {
+        const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+        const cleanName = nameWithoutExt.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_');
+        finalName = cleanName.replace(/^_+|_+$/g, '') || `img_${Date.now()}`;
+      }
+      
+      // Add timestamp to avoid duplicates
+      const fileName = `${finalName}-${Date.now()}.${fileExt}`;
       const filePath = `gallery/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -99,12 +192,13 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
 
       // Add to gallery and select it
       setImages(prev => [{
-        name: file.name, // Use original filename
+        name: finalName, // Use SEO-friendly name
         path: filePath,
         url: publicUrl
       }, ...prev]);
       
       setSelectedImage(publicUrl);
+      setSeoFileName(""); // Reset SEO name field
       setActiveTab('gallery');
     } catch (error) {
       console.error('Error uploading:', error);
@@ -132,9 +226,23 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
     e.stopPropagation();
     setIsDragging(false);
 
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 1 || multiSelect) {
+      await uploadMultipleFiles(files);
+    } else if (files.length > 0) {
       await uploadFile(files[0]);
+    }
+  };
+
+  const toggleImageSelection = (url: string) => {
+    if (multiSelect) {
+      setSelectedImages(prev => 
+        prev.includes(url) 
+          ? prev.filter(u => u !== url)
+          : [...prev, url]
+      );
+    } else {
+      setSelectedImage(url);
     }
   };
 
@@ -145,12 +253,16 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
   };
 
   const handleConfirm = () => {
-    if (selectedImage) {
+    if (multiSelect && selectedImages.length > 0) {
+      onMultiSelect?.(selectedImages);
+      onClose();
+      setSelectedImages([]);
+    } else if (selectedImage) {
       onSelect(selectedImage);
       onClose();
       setSelectedImage(null);
-      setUrlInput("");
     }
+    setUrlInput("");
   };
 
   const filteredImages = images.filter(img =>
@@ -252,41 +364,54 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
                 </div>
               ) : (
                 <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
-                  {filteredImages.map((image) => (
-                    <button
-                      key={image.path}
-                      onClick={() => setSelectedImage(image.url)}
-                      onMouseEnter={() => setHoveredImage(image.path)}
-                      onMouseLeave={() => setHoveredImage(null)}
-                      className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                        selectedImage === image.url
-                          ? 'border-gray-900 ring-2 ring-gray-900 ring-offset-2'
-                          : 'border-transparent hover:border-gray-300'
-                      }`}
-                    >
-                      <Image
-                        src={image.url}
-                        alt={image.name}
-                        fill
-                        className="object-cover"
-                      />
-                      {selectedImage === image.url && (
-                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                          <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                            <Check className="text-gray-900" size={18} />
+                  {filteredImages.map((image) => {
+                    const isSelected = multiSelect 
+                      ? selectedImages.includes(image.url)
+                      : selectedImage === image.url;
+                    const selectionIndex = multiSelect 
+                      ? selectedImages.indexOf(image.url) + 1
+                      : 0;
+                    
+                    return (
+                      <button
+                        key={image.path}
+                        onClick={() => toggleImageSelection(image.url)}
+                        onMouseEnter={() => setHoveredImage(image.path)}
+                        onMouseLeave={() => setHoveredImage(null)}
+                        className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                          isSelected
+                            ? 'border-gray-900 ring-2 ring-gray-900 ring-offset-2'
+                            : 'border-transparent hover:border-gray-300'
+                        }`}
+                      >
+                        <Image
+                          src={image.url}
+                          alt={image.name}
+                          fill
+                          className="object-cover"
+                        />
+                        {isSelected && (
+                          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                              {multiSelect ? (
+                                <span className="text-gray-900 font-bold text-sm">{selectionIndex}</span>
+                              ) : (
+                                <Check className="text-gray-900" size={18} />
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      )}
-                      {/* Image name on hover */}
-                      {hoveredImage === image.path && selectedImage !== image.url && (
-                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                          <p className="text-white text-xs truncate" title={image.name}>
-                            {image.name}
-                          </p>
-                        </div>
-                      )}
-                    </button>
-                  ))}
+                        )}
+                        {/* Image name on hover */}
+                        {hoveredImage === image.path && !isSelected && (
+                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                            <p className="text-white text-xs truncate" title={image.name}>
+                              {image.name}
+                            </p>
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -295,8 +420,26 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
           {/* Upload Tab */}
           {activeTab === 'upload' && (
             <div className="space-y-4">
+              {/* SEO Filename Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  שם קובץ ל-SEO (באנגלית)
+                </label>
+                <input
+                  type="text"
+                  value={seoFileName}
+                  onChange={(e) => setSeoFileName(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-'))}
+                  placeholder="modern-kitchen-tel-aviv"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200"
+                  dir="ltr"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  השתמש באנגלית עם מקפים. לדוגמה: modern-blue-kitchen
+                </p>
+              </div>
+
               <label 
-                className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-xl cursor-pointer transition-colors bg-gray-50 ${
+                className={`flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-xl cursor-pointer transition-colors bg-gray-50 ${
                   isDragging 
                     ? 'border-gray-900 bg-gray-100' 
                     : 'border-gray-200 hover:border-gray-400'
@@ -308,7 +451,13 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
                 {uploading ? (
                   <div className="flex flex-col items-center">
                     <Loader2 className="animate-spin text-gray-400 mb-2" size={32} />
-                    <span className="text-gray-500">מעלה...</span>
+                    <span className="text-gray-500">מעלה... {uploadProgress}%</span>
+                    <div className="w-48 h-2 bg-gray-200 rounded-full mt-2">
+                      <div 
+                        className="h-full bg-gray-900 rounded-full transition-all"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
                   </div>
                 ) : isDragging ? (
                   <>
@@ -318,9 +467,11 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
                 ) : (
                   <>
                     <Upload className="text-gray-400 mb-2" size={40} />
-                    <span className="text-gray-600 font-medium">גרור תמונה לכאן</span>
+                    <span className="text-gray-600 font-medium">גרור תמונות לכאן</span>
                     <span className="text-gray-400 text-sm mt-1">או לחץ לבחירה מהמחשב</span>
-                    <span className="text-gray-400 text-xs mt-2">PNG, JPG, WEBP עד 10MB</span>
+                    <span className="text-gray-400 text-xs mt-2">
+                      {multiSelect ? 'ניתן לבחור מספר תמונות' : 'PNG, JPG, WEBP עד 10MB'}
+                    </span>
                   </>
                 )}
                 <input
@@ -329,6 +480,7 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
                   onChange={handleUpload}
                   className="hidden"
                   disabled={uploading}
+                  multiple={multiSelect}
                 />
               </label>
 
@@ -393,9 +545,24 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
         {/* Footer */}
         <div className="flex items-center justify-between p-4 border-t border-gray-100 bg-gray-50">
           <div className="text-sm text-gray-500">
-            {selectedImage ? 'תמונה נבחרה' : 'בחר תמונה'}
+            {multiSelect 
+              ? selectedImages.length > 0 
+                ? `${selectedImages.length} תמונות נבחרו`
+                : 'בחר תמונות'
+              : selectedImage 
+                ? 'תמונה נבחרה' 
+                : 'בחר תמונה'
+            }
           </div>
           <div className="flex gap-2">
+            {multiSelect && selectedImages.length > 0 && (
+              <button
+                onClick={() => setSelectedImages([])}
+                className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              >
+                נקה בחירה
+              </button>
+            )}
             <button
               onClick={onClose}
               className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
@@ -404,10 +571,10 @@ export default function ImagePicker({ isOpen, onClose, onSelect, title = "בחר
             </button>
             <button
               onClick={handleConfirm}
-              disabled={!selectedImage}
+              disabled={multiSelect ? selectedImages.length === 0 : !selectedImage}
               className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
             >
-              אישור
+              {multiSelect ? `הוסף ${selectedImages.length || ''} תמונות` : 'אישור'}
             </button>
           </div>
         </div>

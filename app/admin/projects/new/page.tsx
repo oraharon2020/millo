@@ -86,6 +86,11 @@ export default function NewProjectPage() {
     }
   };
 
+  const handleMultiImageSelect = (urls: string[]) => {
+    setFormData({ ...formData, images: [...formData.images, ...urls] });
+    setShowImagePicker(false);
+  };
+
   const removeGalleryImage = (index: number) => {
     const newImages = formData.images.filter((_, i) => i !== index);
     setFormData({ ...formData, images: newImages });
@@ -264,7 +269,9 @@ export default function NewProjectPage() {
         isOpen={showImagePicker}
         onClose={() => setShowImagePicker(false)}
         onSelect={handleImageSelect}
-        title={imagePickerMode === 'thumbnail' ? 'בחר תמונה ראשית' : 'הוסף תמונה לגלריה'}
+        onMultiSelect={handleMultiImageSelect}
+        multiSelect={imagePickerMode === 'gallery'}
+        title={imagePickerMode === 'thumbnail' ? 'בחר תמונה ראשית' : 'הוסף תמונות לגלריה'}
       />
     </div>
   );

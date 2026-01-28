@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { supabase, Project } from "@/lib/supabase";
-import { ChevronLeft, ChevronRight, X, Images } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, X, Images } from "lucide-react";
 import CTASection from "@/components/CTASection";
 import NotOnlyKitchens from "@/components/NotOnlyKitchens";
 
@@ -16,6 +16,7 @@ export default function ProjectPage() {
   const [relatedProjects, setRelatedProjects] = useState<Project[]>([]);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
 
   useEffect(() => {
     if (params.id) {
@@ -160,9 +161,39 @@ export default function ProjectPage() {
               {project.title}
             </h2>
             
-            <p className="text-gray-700 text-base leading-relaxed mb-6 font-hebrew">
+            {/* Desktop - Full description */}
+            <p className="hidden md:block text-gray-700 text-base leading-relaxed mb-6 font-hebrew whitespace-pre-line">
               {project.description}
             </p>
+            
+            {/* Mobile - Collapsible description */}
+            <div className="md:hidden mb-6">
+              <div className="relative">
+                <p className={`text-gray-700 text-base leading-relaxed font-hebrew whitespace-pre-line overflow-hidden transition-all duration-500 ease-in-out ${descriptionExpanded ? 'max-h-[2000px]' : 'max-h-[21em]'}`}>
+                  {project.description}
+                </p>
+                {/* Gradient fade overlay */}
+                <div className={`absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent pointer-events-none transition-opacity duration-500 ${descriptionExpanded ? 'opacity-0' : 'opacity-100'}`} />
+              </div>
+              {project.description && project.description.split('\n').length > 10 && (
+                <button
+                  onClick={() => setDescriptionExpanded(!descriptionExpanded)}
+                  className="flex items-center gap-1 text-gray-900 font-medium mt-3 hover:underline transition-all duration-300"
+                >
+                  {descriptionExpanded ? (
+                    <>
+                      <span>הצג פחות</span>
+                      <ChevronUp size={18} className="transition-transform duration-300" />
+                    </>
+                  ) : (
+                    <>
+                      <span>קרא עוד</span>
+                      <ChevronDown size={18} className="transition-transform duration-300" />
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
           </div>
         </div>
 

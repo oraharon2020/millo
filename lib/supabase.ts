@@ -3,7 +3,17 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+console.log('[Supabase] Creating client for:', supabaseUrl)
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storageKey: 'millo-auth',
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  },
+})
 
 // Types for our database
 export interface Project {
@@ -66,7 +76,7 @@ export interface HeroSection {
   cta_text?: string
   cta_link?: string
   main_image_url?: string
-  main_image_position?: string // e.g. 'center', 'left', 'right', '25% 50%'
+  main_image_position?: string
   secondary_image_url?: string
   secondary_image_position?: string
   updated_at: string
@@ -107,16 +117,16 @@ export interface SiteSettings {
 
 export interface KitchenStyle {
   id: string
-  name_en: string           // MODERN, CLASSIC, etc.
-  name_he: string           // מטבח מודרני, מטבח קלאסי
+  name_en: string
+  name_he: string
   image_url?: string
-  image_position?: string   // focal point position
-  row_group: 1 | 2          // 1 = KitchenStyles, 2 = KitchenShowcase
-  text_position: 'top' | 'bottom'  // where to show text relative to image
-  order_index: number       // order within the row
+  image_position?: string
+  row_group: 1 | 2
+  text_position: 'top' | 'bottom'
+  order_index: number
   is_active: boolean
-  link_url?: string         // optional link to projects filtered by style
-  project_category_id?: string  // link to project category for filtering
+  link_url?: string
+  project_category_id?: string
   created_at: string
   updated_at: string
 }

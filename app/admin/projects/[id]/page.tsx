@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowRight, X, Save, ImageIcon, Plus, Trash2 } from "lucide-react";
+import { ArrowRight, X, Save, ImageIcon, Plus, Trash2, GripVertical } from "lucide-react";
 import Link from "next/link";
 import { supabase, ProjectCategory } from "@/lib/supabase";
 import Image from "next/image";
@@ -18,6 +18,7 @@ export default function EditProjectPage() {
   const [categories, setCategories] = useState<ProjectCategory[]>([]);
   const [showImagePicker, setShowImagePicker] = useState(false);
   const [imagePickerMode, setImagePickerMode] = useState<'thumbnail' | 'gallery'>('thumbnail');
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -169,9 +170,36 @@ export default function EditProjectPage() {
     setShowImagePicker(false);
   };
 
+  const handleMultiImageSelect = (urls: string[]) => {
+    setFormData({ ...formData, images: [...formData.images, ...urls] });
+    setShowImagePicker(false);
+  };
+
   const removeGalleryImage = (index: number) => {
     const newImages = formData.images.filter((_, i) => i !== index);
     setFormData({ ...formData, images: newImages });
+  };
+
+  // Drag and drop handlers for gallery reordering
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+    
+    const newImages = [...formData.images];
+    const draggedImage = newImages[draggedIndex];
+    newImages.splice(draggedIndex, 1);
+    newImages.splice(index, 0, draggedImage);
+    
+    setFormData({ ...formData, images: newImages });
+    setDraggedIndex(index);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
   };
 
   if (loading) {
@@ -359,21 +387,44 @@ export default function EditProjectPage() {
 
         {/* Gallery */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">גלריית תמונות</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">גלריית תמונות</h2>
+            {formData.images.length > 1 && (
+              <span className="text-sm text-gray-500">גרור לשינוי סדר</span>
+            )}
+          </div>
           
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
             {formData.images.map((url, index) => (
-              <div key={index} className="relative h-32 rounded-xl overflow-hidden bg-gray-100">
+              <div 
+                key={`${url}-${index}`}
+                draggable
+                onDragStart={() => handleDragStart(index)}
+                onDragOver={(e) => handleDragOver(e, index)}
+                onDragEnd={handleDragEnd}
+                className={`relative h-32 rounded-xl overflow-hidden bg-gray-100 cursor-move group transition-transform ${
+                  draggedIndex === index ? 'ring-2 ring-gray-900 scale-105' : ''
+                }`}
+              >
                 <Image
                   src={url}
                   alt={`Gallery ${index + 1}`}
                   fill
-                  className="object-cover"
+                  className="object-cover pointer-events-none"
                 />
+                {/* Order badge */}
+                <div className="absolute top-2 right-2 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                  {index + 1}
+                </div>
+                {/* Drag handle */}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-colors">
+                  <GripVertical className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" size={24} />
+                </div>
+                {/* Delete button */}
                 <button
                   type="button"
                   onClick={() => removeGalleryImage(index)}
-                  className="absolute top-2 left-2 p-1.5 bg-white rounded-full shadow-lg hover:bg-gray-100"
+                  className="absolute top-2 left-2 p-1.5 bg-white rounded-full shadow-lg hover:bg-red-50 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <X size={12} />
                 </button>
@@ -415,7 +466,9 @@ export default function EditProjectPage() {
         isOpen={showImagePicker}
         onClose={() => setShowImagePicker(false)}
         onSelect={handleImageSelect}
-        title={imagePickerMode === 'thumbnail' ? 'בחר תמונה ראשית' : 'הוסף תמונה לגלריה'}
+        onMultiSelect={handleMultiImageSelect}
+        multiSelect={imagePickerMode === 'gallery'}
+        title={imagePickerMode === 'thumbnail' ? 'בחר תמונה ראשית' : 'הוסף תמונות לגלריה'}
       />
     </div>
   );
